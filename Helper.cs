@@ -13,7 +13,7 @@ namespace AccountManagement
                 + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
 
             // not ai 
-            private const string StringPattern100Chars = @"^.{0,100}$";
+            private const string StringPattern100Chars =  @"^.{100}$";  // limit to 100 characters only
             
 
             private static readonly Regex EmailRegex = 
