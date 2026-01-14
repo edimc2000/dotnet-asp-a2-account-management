@@ -3,6 +3,6 @@
 public class Account
 {
     public string FirstName { get; set; }
-    public string Lastaname { get; set; } // Note: typo in your JSON - should be LastName
-    public string Emailaddress { get; set; } // Note: typo in your JSON - should be EmailAddress
+    public string LastName { get; set; } // Note: typo in your JSON - should be LastName
+    public string EmailAddress { get; set; } // Note: typo in your JSON - should be EmailAddress
 }
