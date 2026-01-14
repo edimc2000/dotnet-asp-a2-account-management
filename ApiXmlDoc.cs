@@ -12,34 +12,31 @@ namespace AccountManagement
         {
 
 
-            ///// <summary>
-            ///// Indicates if the request was successful
-            ///// </summary>
-            ///// <example>true</example>
-            //public required bool Success { get; set; }
+            /// <summary>
+            /// Indicates if the request was successful
+            /// </summary>
+            /// <example>true</example>
+            public required bool Success
+            {
+                get; set;
+            }
 
-            ///// <summary>
-            ///// Response message
-            ///// </summary>
-            ///// <example>Account created successfully</example>
-            //public required string Message { get; set; }
-        
-            ///// <summary>
-            ///// The response data payload
-            ///// </summary>
-            //public required T Data { get; set; }
+            /// <summary>
+            /// Response message
+            /// </summary>
+            /// <example>Account created successfully</example>
+            public required string Message
+            {
+                get; set;
+            }
 
-
-            public bool Success { get; set; }
-            public string Message { get; set; }
-
-
-            [JsonPropertyName("data")]  // This ensures it serializes as "data"
-            public T JsonAccountInput { get; set; }  // Rename this to Data if possible
-    
- 
-
-
+            /// <summary>
+            /// The response data payload
+            /// </summary>
+            public required T Data
+            {
+                get; set;
+            }
 
         }
     
