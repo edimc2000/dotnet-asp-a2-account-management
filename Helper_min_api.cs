@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel;
 using System.Text.Json;
 
+using Swashbuckle.AspNetCore.Annotations;
+
 //using static AccountManagement.Support.ProductSeed;
+
 
 namespace AccountManagement;
 
@@ -43,56 +46,115 @@ internal partial class Helper
     }
 
 
-    // Response models
-    /// <summary>
-    /// Standard API response
-    /// </summary>
-    public class ApiResponse
-    {
-        /// <summary>
-        /// Indicates if the request was successful
-        /// </summary>
-        /// <example>false</example>
-        public bool Success { get; set; }
+    //// Response models
+    ///// <summary>
+    ///// Standard API response
+    ///// </summary>
+    //public class ApiResponse
+    //{
+    //    /// <summary>
+    //    /// Indicates if the request was successful
+    //    /// </summary>
+    //    /// <example>false</example>
+    //    public bool Success { get; set; }
 
-        /// <summary>
-        /// Response message
-        /// </summary>
-        /// <example>Malformed JSON in request body</example>
-        public string Message { get; set; }
-    }
+    //    /// <summary>
+    //    /// Response message
+    //    /// </summary>
+    //    /// <example>Malformed JSON in request body</example>
+    //    public string Message { get; set; }
+    //}
 
-// Generic response with data
-    public class ApiResponse<T> : ApiResponse
-    {
-        public T Data { get; set; }
-    }
+//// Generic response with data
+//    public class ApiResponse<T> : ApiResponse
+//    {
+//        public T Data { get; set; }
+//    }
 
-    public class AccountResponse
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string EmailAddress { get; set; }
-    }
+//    public class AccountResponse
+//    {
+//        /// <summary>
+//        /// Indicates if the request was successful
+//        /// </summary>
+//        /// <example>false</example>
+//        public int Id { get; set; }
+
+//        /// <summary>
+//        /// Indicates if the request was successful
+//        /// </summary>
+//        /// <example>false</example>
+//        public string FirstName { get; set; }
+
+//        /// <summary>
+//        /// Indicates if the request was successful
+//        /// </summary>
+//        /// <example>false</example>
+//        public string LastName { get; set; }
+
+//        /// <summary>
+//        /// Indicates if the request was successful
+//        /// </summary>
+//        /// <example>false</example>
+//        public string EmailAddress { get; set; }
+//    }
 
 
-    public class ApiResponseMalformed
-    {
-        [DefaultValue(false)] public bool Success { get; set; }
+    //public class ApiResponseMalformed
+    //{
+    //public bool Success { get; set; }
 
-        [DefaultValue("Malformed JSON in request body")]
-        public string Message { get; set; }
-    }
+    
+    //    public string Message { get; set; }
+    //}
 
 
-    public class ApiResponseNull
-    {
-        [DefaultValue(false)] 
-        public bool Success { get; set; }
+    //public class ApiResponseNull
+    //{
+    //    [DefaultValue(false)] 
+    //    public bool Success { get; set; }
 
-        [DefaultValue("Unable to parse JSON body")]
-        public string Message { get; set; }
-    }
+    //    [DefaultValue("Unable to parse JSON body")]
+    //    public string Message { get; set; }
+    //}
+
+  
+  
+
+
+    //public class ApiResponseDuplicate
+    //{
+    //    /// <summary>
+    //    /// Always false for error responses
+    //    /// </summary>
+    //    /// <example>false</example>
+    //    public bool Success { get; set; } = false;
+    
+    //    /// <summary>
+    //    /// Error message describing the duplicate account issue
+    //    /// </summary>
+    //    /// <example>Account with email user@example.com already exists</example>
+    //    public string Message { get; set; }
+    
+    //    /// <summary>
+    //    /// Error code for programmatic handling
+    //    /// </summary>
+    //    /// <example>DUPLICATE_ACCOUNT</example>
+    //    public string ErrorCode { get; set; } = "DUPLICATE_ACCOUNT";
+    
+    //    /// <summary>
+    //    /// The email that caused the conflict
+    //    /// </summary>
+    //    /// <example>user@example.com</example>
+    //    public string DuplicateEmail { get; set; }
+    
+    //    public ApiResponseDuplicate(string email = null)
+    //    {
+    //        Message = email != null 
+    //            ? $"Account with email {email} already exists" 
+    //            : "Account already exists";
+    //        DuplicateEmail = email;
+    //    }
+    //}
+
 
 }

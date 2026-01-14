@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>afbd9f96-7867-4b3f-b6dd-6fae3e7da056</UserSecretsId>
+
+
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <NoWarn>$(NoWarn);1591</NoWarn>
+
   </PropertyGroup>
 
 
@@ -16,7 +21,11 @@
 
 
 	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
+
 	</ItemGroup>
 
 </Project>
