@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi;
-using System.Net.Mime;
+﻿using Microsoft.OpenApi;
 using System.Reflection;
-using System.Security.Principal;
-using System.Text.Json;
-using System.Xml;
-using Swashbuckle.AspNetCore.Filters;
+using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using static AccountManagement.Helper;
 using static AccountManagement.ApiXmlDoc;
+
+
+
 
 
 namespace AccountManagement
@@ -45,6 +43,8 @@ namespace AccountManagement
 
             });
 
+   
+
 
             ////******** these are optional environment variables and secrets which might not be
             //// required 
@@ -72,10 +72,6 @@ namespace AccountManagement
             app.UseSwaggerUI();
 
 
-            // Configure Swagger UI
-  
-
-            // Define endpoints WITH NAMES for link references
 
 
             app.MapGet("/account/{id}", (string id) =>
@@ -84,18 +80,8 @@ namespace AccountManagement
                 })
                 .WithName("GetAccountById") 
                 .WithSummary("Search for account")
-                .WithTags("Search for an account using an Id number")
-                .WithOpenApi(o =>
-                {
-                    o.Parameters[0].Description = "The id of the fruit to fetch";
-                    //o.Summary = "Fetches a fruit";
-                    return o;
-                })
-                //.Produces<ApiResponseNull>(422) 
-                //.Produces<ApiResponseDuplicate>(409) 
+                .WithTags("Search for an account using an Id number");
 
-                
-                ;
 
             //improvement needed  this looks ok 
 
@@ -149,6 +135,27 @@ namespace AccountManagement
 
                     // TODO: Save to database
 
+                    using AccountDb db = new();
+                    DbSet<Account> accounts = db.Accounts;
+// Query 1: Get all accounts as IQueryable
+                    IQueryable<Account> allAccounts = db.Accounts;
+            
+                    // Execute the query and get results
+                    List<Account> accountList = allAccounts.ToList();
+                        
+                    // Display all accounts
+                    Console.WriteLine("All Accounts:");
+                    Console.WriteLine("-------------");
+                    foreach (var account in accountList)
+                    {
+                        Console.WriteLine($"ID: {account.Id}");
+                        Console.WriteLine($"Name: {account.FirstName} {account.LastName}");
+                        Console.WriteLine($"Email: {account.EmailAddress}");
+                        Console.WriteLine($"Created: {account.CreatedAt}");
+                        Console.WriteLine($"Updated: {account.UpdatedAt}");
+                        Console.WriteLine();
+                    }
+
                     // Return success with created account
                     return Results.CreatedAtRoute( "GetAccountById", new { id = accountId },
                         // this is the correct one 
@@ -164,22 +171,18 @@ namespace AccountManagement
                 })
                 //.AddEndpointFilter<ValidateJsonFilter>()
                 .WithSummary("Register a new account")
-                .Accepts<Account>("application/json")
+                .Accepts<IJsonAccountInput>("application/json")
+                //.Accepts<AccountData>("a")
                 .WithTags("Register new account")
                 .WithName("RegisterAccount")
              
-                .Produces<ApiResponseSuccess<AccountResponse>>(201) 
+                .Produces<ApiResponseSuccess<AccountData>>(201)
 
                 .Produces<ApiResponseNull>(422) 
                 .Produces<ApiResponseMalformed>(400)
-                .Produces<ApiResponseDuplicate>(409) 
-             
-
-      
-             
-
+                .Produces<ApiResponseDuplicate>(409)
                 
-
+        
                 ;
 
 

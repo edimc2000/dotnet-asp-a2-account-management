@@ -1,8 +1,61 @@
 ﻿namespace AccountManagement;
 
-public class Account
+/// <summary>
+/// Interface for account input data
+/// </summary>
+public interface IJsonAccountInput
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; } // Note: typo in your JSON - should be LastName
-    public string EmailAddress { get; set; } // Note: typo in your JSON - should be EmailAddress
+    /// <summary>
+    /// Account holder's first name
+    /// </summary>
+    /// <example>John</example>
+    string FirstName { get; set; }
+
+    /// <summary>
+    /// Account holder's last name
+    /// </summary>
+    /// <example>Doe</example>
+    string LastName { get; set; }
+
+    /// <summary>
+    /// Account holder's email address
+    /// </summary>
+    /// <example>john.doe@example.com</example>
+    string EmailAddress { get; set; }
+}
+
+/// <summary>
+/// Implementation of account input data
+/// </summary>
+public class AccountData : IJsonAccountInput
+{
+    /// <summary>
+    /// Unique identifier of the account
+    /// </summary>
+    /// <example>100</example>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// Account holder's first name
+    /// </summary>
+    /// <example>John</example>
+    public required string FirstName { get; set; }
+
+    /// <summary>
+    /// Account holder's last name
+    /// </summary>
+    /// <example>Doe</example>
+    public required string LastName { get; set; }
+
+    /// <summary>
+    /// Account holder's email address
+    /// </summary>
+    /// <example>john.doe@example.com</example>
+    public required string EmailAddress { get; set; }
+
+    // Default constructor
+    public AccountData()
+    {
+    }
+
 }

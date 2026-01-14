@@ -1,4 +1,6 @@
-﻿namespace AccountManagement
+﻿using System.Text.Json.Serialization;
+
+namespace AccountManagement
 {
     public class ApiXmlDoc
     {
@@ -10,50 +12,63 @@
         {
 
 
-            /// <summary>
-            /// Indicates if the request was successful
-            /// </summary>
-            /// <example>true</example>
-            public required bool Success { get; set; }
+            ///// <summary>
+            ///// Indicates if the request was successful
+            ///// </summary>
+            ///// <example>true</example>
+            //public required bool Success { get; set; }
 
-            /// <summary>
-            /// Response message
-            /// </summary>
-            /// <example>Account created successfully</example>
-            public required string Message { get; set; }
+            ///// <summary>
+            ///// Response message
+            ///// </summary>
+            ///// <example>Account created successfully</example>
+            //public required string Message { get; set; }
         
-            /// <summary>
-            /// The response data payload
-            /// </summary>
-            public required T Data { get; set; }
+            ///// <summary>
+            ///// The response data payload
+            ///// </summary>
+            //public required T Data { get; set; }
+
+
+            public bool Success { get; set; }
+            public string Message { get; set; }
+
+
+            [JsonPropertyName("data")]  // This ensures it serializes as "data"
+            public T JsonAccountInput { get; set; }  // Rename this to Data if possible
+    
+ 
+
+
+
         }
     
-        public class AccountResponse
-        {
-            /// <summary>
-            /// Unique identifier of the account
-            /// </summary>
-            /// <example>12345</example>
-            public int Id { get; set; }
+        //public class AccountData
+        //{
+        //    /// <summary>
+        //    /// Unique identifier of the account
+        //    /// </summary>
+        //    /// <example>12345</example>
+        //    public int Id { get; set; }
         
-            /// <summary>
-            /// Account holder's first name
-            /// </summary>
-            /// <example>John</example>
-            public string FirstName { get; set; }
+        //    /// <summary>
+        //    /// Account holder's first name
+        //    /// </summary>
+        //    /// <example>John</example>
+        //    public string FirstName { get; set; }
         
-            /// <summary>
-            /// Account holder's last name
-            /// </summary>
-            /// <example>Doe</example>
-            public string LastName { get; set; }
+        //    /// <summary>
+        //    /// Account holder's last name
+        //    /// </summary>
+        //    /// <example>Doe</example>
+        //    public string LastName { get; set; }
         
-            /// <summary>
-            /// Account holder's email address
-            /// </summary>
-            /// <example>john.doe@example.com</example>
-            public string EmailAddress { get; set; }
-        }
+        //    /// <summary>
+        //    /// Account holder's email address
+        //    /// </summary>
+        //    /// <example>john.doe@example.com</example>
+        //    public string EmailAddress { get; set; }
+        //}
 
 
         /// <summary>

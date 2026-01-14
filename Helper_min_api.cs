@@ -71,7 +71,7 @@ internal partial class Helper
 //        public T Data { get; set; }
 //    }
 
-//    public class AccountResponse
+//    public class AccountData
 //    {
 //        /// <summary>
 //        /// Indicates if the request was successful
