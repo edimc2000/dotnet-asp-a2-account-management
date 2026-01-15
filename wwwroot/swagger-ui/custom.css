@@ -14,3 +14,9 @@
 .swagger-ui .model-box[data-name="HttpValidationProblemDetails"] {
     display: none !important;
 }
+
+/* this is for the top bar and some stamps*/
+div.topbar, h1.title > span {
+    display: none !important;
+}
+
