@@ -38,6 +38,39 @@ namespace AccountManagement
 
         }
     
+        /// <summary>
+        /// Response for successful API request
+        /// </summary>
+        public class ApiSearchResponseFormat<T> 
+        {
+            /// <summary>
+            /// Indicates if the request was successful
+            /// </summary>
+            /// <example>true</example>
+            public required bool Success
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Response message
+            /// </summary>
+            /// <example>Account retrieved successfully</example>
+            public required string Message
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// The response data payload
+            /// </summary>
+            public required T Data
+            {
+                get; set;
+            }
+
+        }
+    
         
         /// <summary>
         /// Response for API errors without data payload

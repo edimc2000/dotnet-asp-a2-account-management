@@ -31,7 +31,7 @@ public class DbOperation
             WriteLine($"Updated: {item.UpdatedAt}");
             WriteLine();
         }
-        return SearchAllSuccess(accountList);
+        return SearchSuccess(accountList);
     }
 
 

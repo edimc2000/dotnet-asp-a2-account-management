@@ -1,0 +1,16 @@
+/* Hide the entire schemas section */
+.swagger-ui section.models {
+    display: none !important;
+}
+
+/* Alternative: Just hide the schemas container */
+.swagger-ui .schemas-container,
+.swagger-ui section#schemas {
+    display: none !important;
+}
+
+/* Alternative: Hide only specific schemas (like ProblemDetails) */
+.swagger-ui .model-box[data-name="ProblemDetails"],
+.swagger-ui .model-box[data-name="HttpValidationProblemDetails"] {
+    display: none !important;
+}

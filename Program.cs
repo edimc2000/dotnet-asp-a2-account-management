@@ -1,5 +1,6 @@
 ﻿using Microsoft.OpenApi;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using static AccountManagement.Helper;
@@ -24,12 +25,12 @@ namespace AccountManagement
 
             // swagger 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
 
             // swagger page - configuration 
-            builder.Services.AddSwaggerGen(doc =>
+            builder.Services.AddSwaggerGen(opt =>
             {
-                doc.SwaggerDoc("v1",
+                opt.SwaggerDoc("v1",
                     new OpenApiInfo
                     {
                         Title = "Customer Account Management API",
@@ -39,12 +40,15 @@ namespace AccountManagement
                     }
                 );
 
+         
                 string file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                doc.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, file));
+                opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, file));
 
-                doc.UseAllOfForInheritance();
-                doc.SelectDiscriminatorNameUsing(type => type.Name);
-                doc.SelectDiscriminatorValueUsing(type => type.Name);
+                opt.UseAllOfForInheritance();
+                opt.SelectDiscriminatorNameUsing(type => type.Name);
+                opt.SelectDiscriminatorValueUsing(type => type.Name);
+
+             
             });
             
             ////******** these are optional environment variables and secrets which might not be
@@ -66,11 +70,25 @@ namespace AccountManagement
             ////    builder.Configuration.AddUserSecrets<Program>();
             ////}
 
+
+
             WebApplication app = builder.Build();
 
             // swagger exposition 
             app.UseSwagger();
-            app.UseSwaggerUI();
+            //app.UseSwaggerUI();
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Account API V1");
+    
+                // custom CSS to hide schemas
+                options.InjectStylesheet("/swagger-ui/custom.css");
+    
+
+            });
+
+            app.UseStaticFiles(); // Make sure this is enabled
 
             using (IServiceScope scope = app.Services.CreateScope())
             {
@@ -91,35 +109,40 @@ namespace AccountManagement
                             .AsNoTracking()
                             .ToListAsync();
 
-                        return SearchAllSuccess(accounts);
+                        return SearchSuccess(accounts);
                     })
-                .WithName("GetAllAccounts")
+                .WithName("SearchById")
                 .WithTags("Search")
-                .Produces<ApiResponseSuccess<Account[]>>(200); // got to match the info since this is not automated;
+                .Produces<ApiSearchResponseFormat<Account[]>>(200); // got to match the info since this is not automated;
 
 
 
             app.MapGet("/account/search/id/{id}",
-                    (string id) =>
+                    (string id, AccountDb db) =>
                     {
                         if (!int.TryParse(id, out int parsedId))
                         {
                             WriteLine(id +  "ParseFailed << - debugging");
                             return BadRequest($"'{id}' is not a valid account Id");
                         }
+
+           
                         WriteLine(id +  "Parsing success << - debugging");
+                      
 
+                        var result = SearchById(db, parsedId);
 
-                        return Results.Ok(new { message = $"Account {id}" }); 
-
-
-
+                        WriteLine($"length {result.Count}");
+             
+                        return SearchSuccess(result); 
+                        
                     })
+
                 .WithName("GetAccountById")
                 .WithSummary("Search for account using an account id")
                 .WithTags("Search")
                 .Produces<ApiResponseFail>(400)
-                .Produces<ApiResponseSuccess<AccountData>>(200); // got to match the info since this is not automated
+                .Produces<ApiSearchResponseFormat<Account[]>>(200); // got to match the info since this is not automated
 
 
             app.MapGet("/account/search/email/{email}",

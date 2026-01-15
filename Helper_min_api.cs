@@ -1,10 +1,15 @@
 ﻿//using AccountManagement.Support;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 //using static AccountManagement.Support.ProductSeed;
 
@@ -29,14 +34,31 @@ internal partial class Helper
     /// <summary>Returns successful all accounts response.</summary>
     /// <param name="accountList">The list of Account objects to return in the response.</param>
     /// <returns>An IResult containing the success response with account data.</returns>
-    public static IResult SearchAllSuccess(List<Account> accountList)
+    public static IResult SearchSuccess(List<Account> accountList)
     {
+        string textMessage = $"{
+            (accountList.Count < 1 ? "There are no accounts on the database"
+                : accountList.Count > 1
+                    ? $"Total of {accountList.Count} accounts retrieved successfully"
+                    : "Account retrieved successfully")}";
+
         return Results.Ok(new
         {
             success = true,
-            message = $"Total of {accountList.Count} products retrieved successfully",
+            message = textMessage,
             data = accountList.ToList()
         });
+    }
+
+
+    public static List<Account> SearchById(AccountDb db, int id)
+    {
+        db.ChangeTracker.Clear();
+
+        return db.Accounts
+            .AsNoTracking()
+            .Where(account => account.Id == id)
+            .ToList();
     }
 
 
