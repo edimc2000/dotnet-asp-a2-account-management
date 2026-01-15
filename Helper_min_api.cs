@@ -1,10 +1,10 @@
 ﻿//using AccountManagement.Support;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json;
-
-using Swashbuckle.AspNetCore.Annotations;
 
 //using static AccountManagement.Support.ProductSeed;
 
@@ -26,6 +26,20 @@ internal partial class Helper
         public JsonElement EmailAddress { get; set; }
     }
 
+    /// <summary>Returns successful all accounts response.</summary>
+    /// <param name="accountList">The list of Account objects to return in the response.</param>
+    /// <returns>An IResult containing the success response with account data.</returns>
+    public static IResult SearchAllSuccess(List<Account> accountList)
+    {
+        return Results.Ok(new
+        {
+            success = true,
+            message = $"Total of {accountList.Count} products retrieved successfully",
+            data = accountList.ToList()
+        });
+    }
+
+
     /// <summary>Returns formatted bad request response.</summary>
     /// <param name="message">Error message.</param>
     public static IResult BadRequest(string message)
@@ -36,6 +50,7 @@ internal partial class Helper
             message = $"{message}"
         });
     }
+
     public static IResult UnprocessableEntity(string message)
     {
         return Results.UnprocessableEntity(new
@@ -44,17 +59,4 @@ internal partial class Helper
             message = $"{message}"
         });
     }
-
-
-    /// <summary>Returns successful all products response.</summary>
-    public static IResult SearchAllSuccess( List<Account> accountList)
-    {
-        return Results.Ok(new
-        {
-            success = true,
-            message = $"Total of {accountList.Count} products retrieved successfully",
-            data = accountList.ToList()
-        });
-    }
-
 }

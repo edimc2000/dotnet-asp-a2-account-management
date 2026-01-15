@@ -2,7 +2,7 @@
 
 namespace AccountManagement
 {
-    public class ApiXmlDoc
+    public class ApiResponseFormat
     {
     
         /// <summary>
@@ -10,8 +10,6 @@ namespace AccountManagement
         /// </summary>
         public class ApiResponseSuccess<T> 
         {
-
-
             /// <summary>
             /// Indicates if the request was successful
             /// </summary>
@@ -40,34 +38,7 @@ namespace AccountManagement
 
         }
     
-        //public class AccountData
-        //{
-        //    /// <summary>
-        //    /// Unique identifier of the account
-        //    /// </summary>
-        //    /// <example>12345</example>
-        //    public int Id { get; set; }
         
-        //    /// <summary>
-        //    /// Account holder's first name
-        //    /// </summary>
-        //    /// <example>John</example>
-        //    public string FirstName { get; set; }
-        
-        //    /// <summary>
-        //    /// Account holder's last name
-        //    /// </summary>
-        //    /// <example>Doe</example>
-        //    public string LastName { get; set; }
-        
-        //    /// <summary>
-        //    /// Account holder's email address
-        //    /// </summary>
-        //    /// <example>john.doe@example.com</example>
-        //    public string EmailAddress { get; set; }
-        //}
-
-
         /// <summary>
         /// Response for API errors without data payload
         /// </summary>
@@ -106,6 +77,29 @@ namespace AccountManagement
             public required string Message { get; set; }
 
         }
+
+
+
+        /// <summary>
+        /// Response for API errors without data payload
+        /// </summary>
+        public class ApiResponseFail 
+        {
+            /// <summary>
+            /// Indicates if the request was successful
+            /// </summary>
+            /// <example>false</example>
+            public required bool Success { get; set; }
+
+            /// <summary>
+            /// Response message
+            /// </summary>
+            /// <example>'200a' is not a valid account Id</example>
+            public required string Message { get; set; }
+
+        }
+
+
 
         /// <summary>
         /// Response for API errors - duplicate - email already registered 

@@ -3,7 +3,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using static AccountManagement.Helper;
-using static AccountManagement.ApiXmlDoc;
+using static AccountManagement.ApiResponseFormat;
 using static AccountManagement.DbOperation;
 
 namespace AccountManagement
@@ -12,11 +12,15 @@ namespace AccountManagement
     {
         public static void Main(string[] args)
         {
-
-            using AccountDb db = new();
-            DbSet<Account> accounts = db.Accounts;
+            //using AccountDb db = new();
+            //DbSet<Account> accounts = db.Accounts;
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+
+            builder.Services.AddDbContext<AccountDb>(options =>
+                    options.UseSqlite("Data Source=./account.db"),
+                ServiceLifetime.Scoped); // Each request gets its own instance
 
             // swagger 
             builder.Services.AddEndpointsApiExplorer();
@@ -42,8 +46,7 @@ namespace AccountManagement
                 doc.SelectDiscriminatorNameUsing(type => type.Name);
                 doc.SelectDiscriminatorValueUsing(type => type.Name);
             });
-
-
+            
             ////******** these are optional environment variables and secrets which might not be
             //// required 
             //builder.Configuration.Sources.Clear();
@@ -69,23 +72,82 @@ namespace AccountManagement
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            using (IServiceScope scope = app.Services.CreateScope())
+            {
+                AccountDb db = scope.ServiceProvider.GetRequiredService<AccountDb>();
+                db.Database.Migrate(); // Apply any pending migrations
+                db.Database.ExecuteSqlRaw("PRAGMA journal_mode = WAL;"); // Enable WAL
+            }
 
+            // search all - this is not required but good to have 
+            app.MapGet("/account/search/all",
+                    async (AccountDb db) =>         // Inject fresh DbContext per request
+                    {
+                        // Clear any cached entities
+                        db.ChangeTracker.Clear();                         
 
-            app.MapGet("/account/search/all", 
-                    ()=> 
-                    SearchAll (accounts)
-                    
-                    )
+                        // Use AsNoTracking() to prevent caching
+                        List<Account> accounts = await db.Accounts
+                            .AsNoTracking()
+                            .ToListAsync();
+
+                        return SearchAllSuccess(accounts);
+                    })
                 .WithName("GetAllAccounts")
-                .WithTags("Show all accounts")
-                .Produces<ApiResponseSuccess<AccountData>>(200); // got to match the info since this is not automated;
+                .WithTags("Search")
+                .Produces<ApiResponseSuccess<Account[]>>(200); // got to match the info since this is not automated;
 
-            app.MapGet("/account/search/{id}",
-                    (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
+
+
+            app.MapGet("/account/search/id/{id}",
+                    (string id) =>
+                    {
+                        if (!int.TryParse(id, out int parsedId))
+                        {
+                            WriteLine(id +  "ParseFailed << - debugging");
+                            return BadRequest($"'{id}' is not a valid account Id");
+                        }
+                        WriteLine(id +  "Parsing success << - debugging");
+
+
+                        return Results.Ok(new { message = $"Account {id}" }); 
+
+
+
+                    })
                 .WithName("GetAccountById")
-                .WithSummary("Search for account")
-                .WithTags("Search for an account using an Id number")
+                .WithSummary("Search for account using an account id")
+                .WithTags("Search")
+                .Produces<ApiResponseFail>(400)
                 .Produces<ApiResponseSuccess<AccountData>>(200); // got to match the info since this is not automated
+
+
+            app.MapGet("/account/search/email/{email}",
+                    (string email) => { return Results.Ok(new { message = $"Account {email}" }); })
+                .WithName("GetAccountByEmail")
+                .WithSummary("Search for account using an email address")
+                .WithTags("Search")
+                .Produces<
+                    ApiResponseSuccess<AccountData>>(
+                    200); // got to match the info since this is not automated
+
+
+            app.MapPut("/account/update/id/{id}",
+                    (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
+                .WithName("UpdateAccountById")
+                .WithSummary("Update account using an account id")
+                .WithTags("Update")
+                .Produces<ApiResponseSuccess<AccountData>>(200);
+            // got to match the info since this is not automated
+
+
+            app.MapPut("/account/update/email/{email}",
+                    (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
+                .WithName("UpdateAccountByEmail")
+                .WithSummary("Update account using an email address")
+                .WithTags("Update")
+                .Produces<ApiResponseSuccess<AccountData>>(200);
+            // got to match the info since this is not automated
 
 
             //improvement needed  this looks ok 
@@ -172,7 +234,7 @@ namespace AccountManagement
                 .WithSummary("Register a new account")
                 .Accepts<IJsonAccountInput>("application/json")
                 //.Accepts<AccountData>("a")
-                .WithTags("Register new account")
+                .WithTags("Register")
                 .WithName("RegisterAccount")
                 .Produces<ApiResponseSuccess<AccountData>>(201)
                 .Produces<ApiResponseNull>(422)

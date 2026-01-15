@@ -14,7 +14,7 @@ public class DbOperation
 
 
 
-    public static IResult SearchAll( DbSet<Account> allAccounts)
+    public static IResult Search( DbSet<Account> allAccounts)
     {
         //using AccountDb db = new();
         //DbSet<Account> allAccounts = db.Accounts;
@@ -33,6 +33,9 @@ public class DbOperation
         }
         return SearchAllSuccess(accountList);
     }
+
+
 }
 
 
+    
