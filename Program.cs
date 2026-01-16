@@ -6,6 +6,8 @@ using Swashbuckle.AspNetCore.SwaggerUI;
 using static AccountManagement.Helper;
 using static AccountManagement.ApiResponseFormat;
 using static AccountManagement.DbOperation;
+using Serilog;
+using Serilog.Context;
 
 namespace AccountManagement
 {
@@ -16,10 +18,22 @@ namespace AccountManagement
             //using AccountDb db = new();
             //DbSet<Account> accounts = db.Accounts;
 
+            // enhanced logging seri logging 
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.Console(outputTemplate:
+                    "[{Timestamp:HH:mm:ss} {Level:u3}] {Endpoint} {Message:lj}{NewLine}{Exception}")
+                .CreateLogger();
+
+
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+            // seri log 
+            builder.Host.UseSerilog();
 
+            builder.Services.AddControllers();
             builder.Services.AddDbContext<AccountDb>(options =>
+                    // the connection string should be a secret / configuration variable 
                     options.UseSqlite("Data Source=./account.db"),
                 ServiceLifetime.Scoped); // Each request gets its own instance
 
@@ -40,17 +54,15 @@ namespace AccountManagement
                     }
                 );
 
-         
+
                 string file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, file));
 
                 opt.UseAllOfForInheritance();
                 opt.SelectDiscriminatorNameUsing(type => type.Name);
                 opt.SelectDiscriminatorValueUsing(type => type.Name);
-
-             
             });
-            
+
             ////******** these are optional environment variables and secrets which might not be
             //// required 
             //builder.Configuration.Sources.Clear();
@@ -71,25 +83,46 @@ namespace AccountManagement
             ////}
 
 
-
             WebApplication app = builder.Build();
 
-            // swagger exposition 
-            app.UseSwagger();
-            //app.UseSwaggerUI();
+            // enabled static files serving for swagger UI reformatting
+            //app.UseStaticFiles();
 
+            //seri logging 
+            app.Use(async (context, next) =>
+            {
+                var endpoint = context.GetEndpoint();
+    
+                // Push endpoint name to log context
+                LogContext.PushProperty("EndpointName", 
+                    endpoint?.DisplayName ?? context.Request.Path);
+    
+                // Log request start
+                Log.Information("\n-----\nRequest started: {Method} {Path}", 
+                    context.Request.Method, context.Request.Path);
+    
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                await next();
+                sw.Stop();
+    
+                // Log request completion
+                Log.Information("Request completed in {ElapsedMilliseconds}ms with {StatusCode}", 
+                    sw.ElapsedMilliseconds, context.Response.StatusCode);
+            });
+
+   
+
+            // swagger  
+            app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Account API V1");
-    
+
                 // custom CSS to hide schemas
                 options.InjectStylesheet("/swagger-ui/custom.css");
-    
-
             });
 
-            app.UseStaticFiles(); // Make sure this is enabled
-
+            app.UseStaticFiles(); // enabled static files for swagger UI reformatting
             using (IServiceScope scope = app.Services.CreateScope())
             {
                 AccountDb db = scope.ServiceProvider.GetRequiredService<AccountDb>();
@@ -99,45 +132,41 @@ namespace AccountManagement
 
             // search all - this is not required but good to have 
             app.MapGet("/account/search/all",
-                    async (AccountDb db) =>         // Inject fresh DbContext per request
+                    async (AccountDb db) => // Inject fresh DbContext per request
                     {
-                        // Clear any cached entities
-                        db.ChangeTracker.Clear();                         
-
-                        // Use AsNoTracking() to prevent caching
-                        List<Account> accounts = await db.Accounts
-                            .AsNoTracking()
-                            .ToListAsync();
-
-                        return SearchSuccess(accounts);
+                        List<Account> result = Search(db);
+                        return SearchSuccess(result);
                     })
-                .WithName("SearchById")
+                .WithName("Search")
                 .WithTags("Search")
-                .Produces<ApiSearchResponseFormat<Account[]>>(200); // got to match the info since this is not automated;
-
+                .Produces<
+                    ApiSearchResponseFormat<Account[]>>(
+                    200); // got to match the info since this is not automated;
 
 
             app.MapGet("/account/search/id/{id}",
-                    (string id, AccountDb db) =>
+                  async   (string id, AccountDb db) =>
                     {
+
                         if (!int.TryParse(id, out int parsedId))
                         {
-                            WriteLine(id +  "ParseFailed << - debugging");
+                            WriteLine(id + "ParseFailed << - debugging");
                             return BadRequest($"'{id}' is not a valid account Id");
                         }
 
-           
-                        WriteLine(id +  "Parsing success << - debugging");
-                      
 
-                        var result = SearchById(db, parsedId);
+                        WriteLine(id + "Parsing success << - debugging");
+
+                        //debugging for email using search all in one 
+                        //List<Account> resultx = Search(db, null, "test@gmail.com");
+
+                        List<Account> result = Search(db, parsedId);
+
 
                         WriteLine($"length {result.Count}");
-             
-                        return SearchSuccess(result); 
-                        
-                    })
 
+                        return SearchSuccess(result);
+                    })
                 .WithName("GetAccountById")
                 .WithSummary("Search for account using an account id")
                 .WithTags("Search")
@@ -146,17 +175,27 @@ namespace AccountManagement
 
 
             app.MapGet("/account/search/email/{email}",
-                    (string email) => { return Results.Ok(new { message = $"Account {email}" }); })
+                    async (string email, AccountDb db) =>
+                    {
+                        
+                        //return Results.Ok(new { message = $"Account {email}" }
+
+                        List<Account> result = Search(db, null, email);
+                        
+                        WriteLine($"length {result.Count}");
+
+                        return SearchSuccess(result); 
+                        
+                        
+                    })
                 .WithName("GetAccountByEmail")
                 .WithSummary("Search for account using an email address")
                 .WithTags("Search")
-                .Produces<
-                    ApiResponseSuccess<AccountData>>(
-                    200); // got to match the info since this is not automated
+                .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
 
             app.MapPut("/account/update/id/{id}",
-                    (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
+                 (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
                 .WithName("UpdateAccountById")
                 .WithSummary("Update account using an account id")
                 .WithTags("Update")

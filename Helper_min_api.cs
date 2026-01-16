@@ -51,15 +51,6 @@ internal partial class Helper
     }
 
 
-    public static List<Account> SearchById(AccountDb db, int id)
-    {
-        db.ChangeTracker.Clear();
-
-        return db.Accounts
-            .AsNoTracking()
-            .Where(account => account.Id == id)
-            .ToList();
-    }
 
 
     /// <summary>Returns formatted bad request response.</summary>
