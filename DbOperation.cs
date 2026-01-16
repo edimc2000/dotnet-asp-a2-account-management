@@ -35,4 +35,14 @@ public class DbOperation
             .AsNoTracking()
             .Max(account => (account.Id));
     }
+
+
+    public static async void AddAccount(AccountDb db, Account newAccount)
+    {
+        WriteLine("    --- add account module --- ");
+        WriteLine(newAccount.Id);
+        db.Add(newAccount);
+        await db.SaveChangesAsync();
+    }
+
 }

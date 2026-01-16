@@ -227,8 +227,7 @@ namespace AccountManagement
                             LastName = lastName,
                             EmailAddress = emailAddress,
                             CreatedAt =  DateTime.UtcNow
-         
-                        };
+         };
 
 
 
@@ -260,7 +259,7 @@ namespace AccountManagement
                         }
 
 
-
+                        AddAccount(db, newAccount);
 
 
                         // TODO: Save to database
