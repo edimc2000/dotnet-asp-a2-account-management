@@ -1,13 +1,17 @@
-﻿using Microsoft.OpenApi;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using static AccountManagement.Helper;
-using static AccountManagement.ApiResponseFormat;
-using static AccountManagement.DbOperation;
+using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Context;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Reflection;
+using static AccountManagement.AccountEndpoints;
+using static AccountManagement.ApiResponseFormat;
+using static AccountManagement.DbOperation;
+using static AccountManagement.Helper;
 
 namespace AccountManagement
 {
@@ -91,26 +95,27 @@ namespace AccountManagement
             //seri logging 
             app.Use(async (context, next) =>
             {
-                var endpoint = context.GetEndpoint();
-    
+                Endpoint? endpoint = context.GetEndpoint();
+
                 // Push endpoint name to log context
-                LogContext.PushProperty("EndpointName", 
+                LogContext.PushProperty("EndpointName",
                     endpoint?.DisplayName ?? context.Request.Path);
-    
+
                 // Log request start
-                Log.Information("\n-----\nRequest started: {Method} {Path}", 
-                    context.Request.Method, context.Request.Path);
-    
-                var sw = System.Diagnostics.Stopwatch.StartNew();
+                Log.Information("\n-----\nRequest started: {Method} {Path}",
+                    context.Request.Method,
+                    context.Request.Path);
+
+                Stopwatch sw = Stopwatch.StartNew();
                 await next();
                 sw.Stop();
-    
+
                 // Log request completion
-                Log.Information("Request completed in {ElapsedMilliseconds}ms with {StatusCode}", 
-                    sw.ElapsedMilliseconds, context.Response.StatusCode);
+                Log.Information("Request completed in {ElapsedMilliseconds}ms with {StatusCode}",
+                    sw.ElapsedMilliseconds,
+                    context.Response.StatusCode);
             });
 
-   
 
             // swagger  
             app.UseSwagger();
@@ -118,7 +123,7 @@ namespace AccountManagement
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Account API V1");
 
-                // custom CSS to hide schemas
+                // custom CSS to hide schemas and other page elements 
                 options.InjectStylesheet("/swagger-ui/custom.css");
             });
 
@@ -131,62 +136,35 @@ namespace AccountManagement
             }
 
             // search all - this is not required but good to have 
-            app.MapGet("/account/search/all",
-                    async (AccountDb db) => // Inject fresh DbContext per request
-                    {
-                        List<Account> result = Search(db);
-                        return SearchSuccess(result);
-                    })
+            app.MapGet("/account/search/all", SearchAll)
                 .WithName("Search")
                 .WithTags("Search")
                 .Produces<
                     ApiSearchResponseFormat<Account[]>>(
                     200); // got to match the info since this is not automated;
 
-
+            // search by id
             app.MapGet("/account/search/id/{id}",
-                  async   (string id, AccountDb db) =>
+                    (string id, AccountDb db) =>
                     {
-
-                        if (!int.TryParse(id, out int parsedId))
-                        {
-                            WriteLine(id + "ParseFailed << - debugging");
-                            return BadRequest($"'{id}' is not a valid account Id");
-                        }
-
-
-                        WriteLine(id + "Parsing success << - debugging");
-
-                        //debugging for email using search all in one 
-                        //List<Account> resultx = Search(db, null, "test@gmail.com");
-
-                        List<Account> result = Search(db, parsedId);
-
-
-                        WriteLine($"length {result.Count}");
-
-                        return SearchSuccess(result);
-                    })
+                        (IResult result, int counter) result = SearchById(id, db);
+                        return result.result;
+                    }
+                )
                 .WithName("GetAccountById")
                 .WithSummary("Search for account using an account id")
                 .WithTags("Search")
                 .Produces<ApiResponseFail>(400)
-                .Produces<ApiSearchResponseFormat<Account[]>>(200); // got to match the info since this is not automated
+                .Produces<
+                    ApiSearchResponseFormat<Account[]>>(
+                    200); // got to match the info since this is not automated
 
-
+            // search by email 
             app.MapGet("/account/search/email/{email}",
-                    async (string email, AccountDb db) =>
+                    (string email, AccountDb db) =>
                     {
-                        
-                        //return Results.Ok(new { message = $"Account {email}" }
-
-                        List<Account> result = Search(db, null, email);
-                        
-                        WriteLine($"length {result.Count}");
-
-                        return SearchSuccess(result); 
-                        
-                        
+                        (IResult result, int counter) result = SearchByEmail(email, db);
+                        return result.result;
                     })
                 .WithName("GetAccountByEmail")
                 .WithSummary("Search for account using an email address")
@@ -194,8 +172,11 @@ namespace AccountManagement
                 .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
 
+
+    
+
             app.MapPut("/account/update/id/{id}",
-                 (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
+                    (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
                 .WithName("UpdateAccountById")
                 .WithSummary("Update account using an account id")
                 .WithTags("Update")
@@ -216,46 +197,55 @@ namespace AccountManagement
 
 
             app.MapPost("/account/register",
-                    async (HttpContext context) =>
+                    async (HttpContext context, AccountDb db) =>
                     {
-                        // Model binding handles validation automatically
-                        // But you can add additional validation
-
-
+           
                         (InputDataConverter? dataConverter, IResult? error) =
                             await TryReadJsonBodyAsync<InputDataConverter>(context.Request);
                         if (error != null) return error;
 
+                 
 
-                        // Log the received data
+
+
+
+                        // Log the received data FILTER 1 
                         WriteLine($"-- data received ---\n --- with valid json format ---\n" +
-                                  $"FirstName: {dataConverter.FirstName}");
-                        WriteLine($"LastName: {dataConverter.LastName}");
-                        WriteLine($"EmailAddress: {dataConverter.EmailAddress}");
+                                  $"   >>>> FirstName: {dataConverter.FirstName}");
+                        WriteLine($"   >>>> LastName: {dataConverter.LastName}");
+                        WriteLine($"   >>>> EmailAddress: {dataConverter.EmailAddress}");
 
-                        // Validate input (using your InputValidation class)
-                        //if (!InputValidation.IsString(request.FirstName))
-                        //    return Results.BadRequest("Invalid first name format");
-
-                        //if (!InputValidation.IsString(request.LastName))
-                        //    return Results.BadRequest("Invalid last name format");
-
-                        // Check if email already exists (pseudo-code)
-                        // bool emailExists = await CheckEmailExists(request.EmailAddress);
-                        // if (emailExists) return Results.Conflict("Email already registered");
-
+       
                         // Generate ID (you mentioned accounts need an ID)
                         // query the database and generate using the last number +1
                         string accountId = Guid.NewGuid().ToString();
 
                         //Create account object(add to database, etc.)
-                        var newAccount = new
+                        Account newAccount = new()
                         {
-                            Id = accountId,
-                            FirstName = dataConverter.FirstName,
-                            LastName = dataConverter.LastName,
-                            EmailAddress = dataConverter.EmailAddress
+                            Id = GetLastIdNumber(db)+1,
+                            FirstName = dataConverter.FirstName.ToString(),
+                            LastName = dataConverter.LastName.ToString(),
+                            EmailAddress = dataConverter.EmailAddress.ToString()
                         };
+
+
+
+
+                        var validationContext = new ValidationContext(newAccount);
+                        var validationResults = new List<ValidationResult>();
+                        bool isValid = Validator.TryValidateObject(newAccount, validationContext, validationResults, true);
+                       
+                        
+                        if (!isValid)
+                        {
+                            WriteLine($"----DATA ANNOTATION DEBUG DATA NOT VALID -"); 
+                            var errors = string.Join("; ", validationResults.Select(r => r.ErrorMessage));
+                            return BadRequest($"Validation failed: {errors}");
+
+                            //WriteLine($"Validation failed: {errors}");
+                        }
+
 
                         // TODO: Save to database
 

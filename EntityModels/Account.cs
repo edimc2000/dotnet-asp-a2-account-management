@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-
 namespace AccountManagement;
 
 
@@ -27,6 +26,8 @@ public partial class Account
     /// </summary>
     /// <example>John</example>
     [Column("first_name")]
+    [Required]
+    [StringLength(100, MinimumLength = 2)]
     public string FirstName { get; set; } = null!;
 
     /// <summary>
@@ -34,6 +35,8 @@ public partial class Account
     /// </summary>
     /// <example>Doe</example>
     [Column("last_name")]
+    [Required]
+    [StringLength(100, MinimumLength = 2)]
     public string LastName { get; set; } = null!;
 
     /// <summary>
@@ -41,6 +44,9 @@ public partial class Account
     /// </summary>
     /// <example>john.doe@example.com</example>
     [Column("email_address")]
+    [Required]
+    [StringLength(100,MinimumLength = 4)]
+    [EmailAddress]
     public string EmailAddress { get; set; } = null!;
 
     /// <summary>
