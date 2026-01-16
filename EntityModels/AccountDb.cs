@@ -27,7 +27,7 @@ public partial class AccountDb : DbContext
         modelBuilder.Entity<Account>(entity =>
         {
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            //entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         OnModelCreatingPartial(modelBuilder);

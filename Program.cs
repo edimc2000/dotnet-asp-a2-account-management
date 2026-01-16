@@ -172,9 +172,6 @@ namespace AccountManagement
                 .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
 
-
-    
-
             app.MapPut("/account/update/id/{id}",
                     (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
                 .WithName("UpdateAccountById")
@@ -199,7 +196,6 @@ namespace AccountManagement
             app.MapPost("/account/register",
                     async (HttpContext context, AccountDb db) =>
                     {
-           
                         (InputDataConverter? dataConverter, IResult? error) =
                             await TryReadJsonBodyAsync<InputDataConverter>(context.Request);
                         if (error != null) return error;
@@ -209,14 +205,13 @@ namespace AccountManagement
                         string firstName = dataConverter.FirstName.ToString();
                         string lastName = dataConverter.LastName.ToString();
                         string emailAddress = dataConverter.EmailAddress.ToString();
-                        
+
                         // Log the received data FILTER 1 
-                        WriteLine($"-- data received (INPUT ---\n --- with valid json format ---\n" +
-                                  $"   >>>> FirstName: {dataConverter.FirstName}");
+                        WriteLine(
+                            $"-- data received (INPUT ---\n --- with valid json format ---\n" +
+                            $"   >>>> FirstName: {dataConverter.FirstName}");
                         WriteLine($"   >>>> LastName: {dataConverter.LastName}");
                         WriteLine($"   >>>> EmailAddress: {dataConverter.EmailAddress}");
-
-
 
 
                         //Create account object(add to database, etc.)
@@ -225,21 +220,23 @@ namespace AccountManagement
                             Id = newIdNumber,
                             FirstName = firstName,
                             LastName = lastName,
-                            EmailAddress = emailAddress,
-                            CreatedAt =  DateTime.UtcNow
-         };
+                            EmailAddress = emailAddress
+                            //CreatedAt =  DateTime.UtcNow
+                        };
 
 
+                        ValidationContext validationContext = new(newAccount);
+                        List<ValidationResult> validationResults = new();
+                        bool isValid = Validator.TryValidateObject(newAccount,
+                            validationContext,
+                            validationResults,
+                            true);
 
-
-                        var validationContext = new ValidationContext(newAccount);
-                        var validationResults = new List<ValidationResult>();
-                        bool isValid = Validator.TryValidateObject(newAccount, validationContext, validationResults, true);
-                       
                         if (!isValid)
                         {
-                            WriteLine($"----DATA ANNOTATION DEBUG DATA NOT VALID -"); 
-                            var errors = string.Join("; ", validationResults.Select(r => r.ErrorMessage));
+                            WriteLine($"----DATA ANNOTATION DEBUG DATA NOT VALID -");
+                            string errors = string.Join("; ",
+                                validationResults.Select(r => r.ErrorMessage));
                             return BadRequest($"Validation failed: {errors}");
 
                             //WriteLine($"Validation failed: {errors}");
@@ -247,16 +244,14 @@ namespace AccountManagement
 
                         // ensure that there are no existing records 
 
-                        
+
                         int emailCount = SearchByEmail(emailAddress, db).counter;
-                        WriteLine($"--- CHECKING FOR EXISTING RECORD - email record count {emailCount}---\n"); 
+                        WriteLine(
+                            $"--- CHECKING FOR EXISTING RECORD - email record count {emailCount}---\n");
 
-                        if (emailCount!=0)
-                        {
-                           
-                            return ConflictResult($"The email address is either tied to an account or cannot be used for registration");
-
-                        }
+                        if (emailCount != 0)
+                            return ConflictResult(
+                                $"The email address is either tied to an account or cannot be used for registration");
 
 
                         AddAccount(db, newAccount);
