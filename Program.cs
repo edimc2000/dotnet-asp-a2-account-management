@@ -204,29 +204,30 @@ namespace AccountManagement
                             await TryReadJsonBodyAsync<InputDataConverter>(context.Request);
                         if (error != null) return error;
 
-                 
 
-
-
-
+                        int newIdNumber = GetLastIdNumber(db) + 1;
+                        string firstName = dataConverter.FirstName.ToString();
+                        string lastName = dataConverter.LastName.ToString();
+                        string emailAddress = dataConverter.EmailAddress.ToString();
+                        
                         // Log the received data FILTER 1 
-                        WriteLine($"-- data received ---\n --- with valid json format ---\n" +
+                        WriteLine($"-- data received (INPUT ---\n --- with valid json format ---\n" +
                                   $"   >>>> FirstName: {dataConverter.FirstName}");
                         WriteLine($"   >>>> LastName: {dataConverter.LastName}");
                         WriteLine($"   >>>> EmailAddress: {dataConverter.EmailAddress}");
 
-       
-                        // Generate ID (you mentioned accounts need an ID)
-                        // query the database and generate using the last number +1
-                        string accountId = Guid.NewGuid().ToString();
+
+
 
                         //Create account object(add to database, etc.)
                         Account newAccount = new()
                         {
-                            Id = GetLastIdNumber(db)+1,
-                            FirstName = dataConverter.FirstName.ToString(),
-                            LastName = dataConverter.LastName.ToString(),
-                            EmailAddress = dataConverter.EmailAddress.ToString()
+                            Id = newIdNumber,
+                            FirstName = firstName,
+                            LastName = lastName,
+                            EmailAddress = emailAddress,
+                            CreatedAt =  DateTime.UtcNow
+         
                         };
 
 
@@ -236,7 +237,6 @@ namespace AccountManagement
                         var validationResults = new List<ValidationResult>();
                         bool isValid = Validator.TryValidateObject(newAccount, validationContext, validationResults, true);
                        
-                        
                         if (!isValid)
                         {
                             WriteLine($"----DATA ANNOTATION DEBUG DATA NOT VALID -"); 
@@ -245,6 +245,22 @@ namespace AccountManagement
 
                             //WriteLine($"Validation failed: {errors}");
                         }
+
+                        // ensure that there are no existing records 
+
+                        
+                        int emailCount = SearchByEmail(emailAddress, db).counter;
+                        WriteLine($"--- CHECKING FOR EXISTING RECORD - email record count {emailCount}---\n"); 
+
+                        if (emailCount!=0)
+                        {
+                           
+                            return ConflictResult($"The email address is either tied to an account or cannot be used for registration");
+
+                        }
+
+
+
 
 
                         // TODO: Save to database
@@ -272,7 +288,7 @@ namespace AccountManagement
 
                         // Return success with created account
                         return Results.CreatedAtRoute("GetAccountById",
-                            new { id = accountId },
+                            new { id = newIdNumber },
                             // this is the correct one 
                             new
                             {

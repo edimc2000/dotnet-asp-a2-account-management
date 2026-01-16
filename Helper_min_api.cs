@@ -72,4 +72,17 @@ internal partial class Helper
             message = $"{message}"
         });
     }
+
+
+    /// <summary>Returns formatted bad request response.</summary>
+    /// <param name="message">Error message.</param>
+    public static IResult ConflictResult(string message)
+    {
+        return Results.Conflict(new
+        {
+            success = false,
+            message = $"{message}"
+        });
+    }
+
 }

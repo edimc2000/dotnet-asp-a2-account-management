@@ -43,18 +43,18 @@ internal partial class Helper
             catch (JsonException jex)
             {
                 WriteLine($"\nMalformed JSON: {jex.Message}");
-                return (default, BadRequest("Malformed JSON in request body"));
+                return (default, UnprocessableEntity("Malformed JSON in request body"));
             }
             catch (Exception ex)
             {
                 WriteLine($"\nUnexpected error deserializing JSON: {ex.Message}");
-                return (default, BadRequest("Malformed JSON in request body"));
+                return (default, UnprocessableEntity("Malformed JSON in request body"));
             }
         }
         catch (Exception ex)
         {
             WriteLine($"\nError reading request body: {ex.Message}");
-            return (default, BadRequest("Malformed JSON in request body"));
+            return (default, UnprocessableEntity("Malformed JSON in request body"));
         }
     }
 

@@ -61,5 +61,5 @@ public partial class Account
     /// </summary>
     /// <example>2056-01-02T23:59:00</example>
     [Column("updated_at", TypeName = "DATETIME")]
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } 
 }
