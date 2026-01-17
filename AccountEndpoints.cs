@@ -114,13 +114,18 @@ public class AccountEndpoints
         //};
 
 
+
+
         Account? account = await db.Accounts.FindAsync(parsedId);
         //Account? account = await db.Accounts
         //    .AsNoTracking()
         //    .FirstOrDefaultAsync(a => a.Id == parsedId);
+        
 
+        if (account == null )
+            return BadRequest($"'{id}' is not a valid account Id");
 
-        WriteLine($"Account Details:");
+        WriteLine($"Account Details: ");
         WriteLine($"  ID: {account.Id}");
         WriteLine($"  First Name: {account.FirstName}");
         WriteLine($"  Last Name: {account.LastName}");
@@ -131,8 +136,7 @@ public class AccountEndpoints
 
         //UpdateAccountProperty(updateAccountIncoming, "LastName", lastName, account);
 
-        if (account == null)
-            return BadRequest($"'{id}' is not a valid account Id");
+  
 
         // Check if email is being changed to an existing email
         if (emailAddress != account.EmailAddress)
@@ -146,33 +150,52 @@ public class AccountEndpoints
 
         //account.FirstName = firstName;
 
-        // Update only if value is provided AND different from current
-        if (!string.IsNullOrEmpty(firstName) && account.FirstName != firstName)
-        {
-            account.FirstName = firstName;
-            hasChanges = true;
-        }
+        //// Update only if value is provided AND different from current
+        //if (!string.IsNullOrEmpty(firstName) && account.FirstName != firstName)
+        //{
+        //    account.FirstName = firstName;
+        //    hasChanges = true;
+        //}
 
-        if (!string.IsNullOrEmpty(lastName) && account.LastName != lastName)
-        {
-            account.LastName = lastName;
-            hasChanges = true;
-        }
+        //if (!string.IsNullOrEmpty(lastName) && account.LastName != lastName)
+        //{
+        //    account.LastName = lastName;
+        //    hasChanges = true;
+        //}
 
-        if (!string.IsNullOrEmpty(emailAddress) && account.EmailAddress != emailAddress)
-        {
-            //var emailExists = await db.Accounts
-            //    .AnyAsync(a => a.EmailAddress == emailAddress && a.Id != parsedId);
+        //if (!string.IsNullOrEmpty(emailAddress) && account.EmailAddress != emailAddress)
+        //{
+        //    //var emailExists = await db.Accounts
+        //    //    .AnyAsync(a => a.EmailAddress == emailAddress && a.Id != parsedId);
         
-            //if (emailExists)
-            //    return BadRequest("Email address already exists");
+        //    //if (emailExists)
+        //    //    return BadRequest("Email address already exists");
         
-            account.EmailAddress = emailAddress;
-            hasChanges = true;
-        }
+        //    account.EmailAddress = emailAddress;
+        //    hasChanges = true;
+        //}
 
         //account.LastName = lastName;
         //account.EmailAddress = emailAddress;
+
+
+        // first name 
+        hasChanges |= TryUpdatePropertyIfChanged( hasChanges, 
+            account.FirstName, firstName, 
+            value => account.FirstName = value);
+
+        // last name 
+        hasChanges |= TryUpdatePropertyIfChanged( hasChanges, 
+            account.LastName, lastName, 
+            value => account.LastName = value);
+
+        // email 
+        hasChanges |= TryUpdatePropertyIfChanged( hasChanges, 
+            account.EmailAddress, emailAddress, 
+            value => account.EmailAddress = value);
+
+
+
         account.UpdatedAt = DateTime.UtcNow;
 
         await db.SaveChangesAsync();

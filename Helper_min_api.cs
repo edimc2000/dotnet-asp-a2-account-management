@@ -101,37 +101,18 @@ internal partial class Helper
 
 
 
-    public static void UpdateAccountProperty(UpdateAccount updateAccountIncoming , string prop, string value, Account account)
+    public static bool TryUpdatePropertyIfChanged<T>( bool hasChanges, 
+        T currentValue, T newValue, Action<T> setter)
+        where T : IEquatable<T>
     {
-        
-        WriteLine($" *-*-*-*-* property {prop}" );
-        WriteLine( $" is empty or null {string.IsNullOrEmpty(value)}");
-        WriteLine( $" Data base value {account.LastName }");
-
-        if (!string.IsNullOrEmpty(value)){
-            var propertyInfo = account.GetType().GetProperty(prop);
-            propertyInfo.SetValue(account, value);
-            WriteLine($" *-*-*-*-* updating ${prop}" );
-        }
-
-    }
-
-    public static void LogAllProperties(UpdateAccount account)
-    {
-        Console.WriteLine("=== UpdateAccount Properties DEBUGGING ===");
-    
-        var properties = typeof(UpdateAccount).GetProperties();
-    
-        foreach (var property in properties)
+        if (newValue != null && !currentValue.Equals(newValue))
         {
-            var value = property.GetValue(account);
-            var displayValue = value?.ToString() ?? "[null]";
-        
-            Console.WriteLine($"{property.Name}: {displayValue}");
+            setter(newValue);
+            return true;
         }
-    
-        Console.WriteLine("================================");
+        return false;
     }
+
 
 
 
