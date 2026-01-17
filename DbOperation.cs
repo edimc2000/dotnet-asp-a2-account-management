@@ -8,32 +8,32 @@ namespace AccountManagement;
 
 public class DbOperation
 {
-    public static List<Account> Search(AccountDb db, int? id = null, string? email = null)
+    public static async Task<List<Account>> Search(AccountDb db, int? id = null, string? email = null)
     {
         if (id != null)
         {
-            return db.Accounts
+            return await db.Accounts
                 .AsNoTracking()
                 .Where(account => account.Id == id)
-                .ToList();
+                .ToListAsync();
         }
 
         else if (email != null)
-            return db.Accounts
+            return await db.Accounts
                 .AsNoTracking()
                 .Where(account => account.EmailAddress.Contains($"{email}"))
-                .ToList();
+                .ToListAsync();
 
         else
-            return db.Accounts
+            return await db.Accounts
                 .AsNoTracking()
-                .ToList();
+                .ToListAsync();
     }
 
 
-    public static int GetLastIdNumber(AccountDb db)
+    public static  int GetLastIdNumber(AccountDb db)
     {
-        return db.Accounts
+        return  db.Accounts
             .AsNoTracking()
             .Max(account => (account.Id));
     }
