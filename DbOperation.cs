@@ -1,6 +1,8 @@
-﻿using System.Runtime.InteropServices.Marshalling;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices.Marshalling;
 using Microsoft.EntityFrameworkCore;
 using static AccountManagement.Helper;
+using static AccountManagement.AccountEndpoints;
 
 namespace AccountManagement;
 
@@ -36,13 +38,5 @@ public class DbOperation
             .Max(account => (account.Id));
     }
 
-
-    public static async void AddAccount(AccountDb db, Account newAccount)
-    {
-        WriteLine("    --- add account module --- ");
-        WriteLine(newAccount.Id);
-        db.Add(newAccount);
-        await db.SaveChangesAsync();
-    }
 
 }

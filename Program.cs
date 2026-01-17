@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Context;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Reflection;
 using static AccountManagement.AccountEndpoints;
 using static AccountManagement.ApiResponseFormat;
-using static AccountManagement.DbOperation;
-using static AccountManagement.Helper;
+
 
 namespace AccountManagement
 {
@@ -194,144 +189,22 @@ namespace AccountManagement
 
 
             app.MapPost("/account/register",
-                    async (HttpContext context, AccountDb db) =>
-                    {
-                        (InputDataConverter? dataConverter, IResult? error) =
-                            await TryReadJsonBodyAsync<InputDataConverter>(context.Request);
-                        if (error != null) return error;
-
-
-                        int newIdNumber = GetLastIdNumber(db) + 1;
-                        string firstName = dataConverter.FirstName.ToString();
-                        string lastName = dataConverter.LastName.ToString();
-                        string emailAddress = dataConverter.EmailAddress.ToString();
-
-                        // Log the received data FILTER 1 
-                        WriteLine(
-                            $"-- data received (INPUT ---\n --- with valid json format ---\n" +
-                            $"   >>>> FirstName: {dataConverter.FirstName}");
-                        WriteLine($"   >>>> LastName: {dataConverter.LastName}");
-                        WriteLine($"   >>>> EmailAddress: {dataConverter.EmailAddress}");
-
-
-                        //Create account object(add to database, etc.)
-                        Account newAccount = new()
-                        {
-                            Id = newIdNumber,
-                            FirstName = firstName,
-                            LastName = lastName,
-                            EmailAddress = emailAddress
-                            //CreatedAt =  DateTime.UtcNow
-                        };
-
-
-                        ValidationContext validationContext = new(newAccount);
-                        List<ValidationResult> validationResults = new();
-                        bool isValid = Validator.TryValidateObject(newAccount,
-                            validationContext,
-                            validationResults,
-                            true);
-
-                        if (!isValid)
-                        {
-                            WriteLine($"----DATA ANNOTATION DEBUG DATA NOT VALID -");
-                            string errors = string.Join("; ",
-                                validationResults.Select(r => r.ErrorMessage));
-                            return BadRequest($"Validation failed: {errors}");
-
-                            //WriteLine($"Validation failed: {errors}");
-                        }
-
-                        // ensure that there are no existing records 
-
-
-                        int emailCount = SearchByEmail(emailAddress, db).counter;
-                        WriteLine(
-                            $"--- CHECKING FOR EXISTING RECORD - email record count {emailCount}---\n");
-
-                        if (emailCount != 0)
-                            return ConflictResult(
-                                $"The email address is either tied to an account or cannot be used for registration");
-
-
-                        AddAccount(db, newAccount);
-
-
-                        // TODO: Save to database
-
-                        ////using AccountDb db = new();
-                        ////DbSet<Account> accounts = db.Accounts;
-                        //// Query 1: Get all accounts as IQueryable
-                        //IQueryable<Account> allAccounts = db.Accounts;
-
-                        // Execute the query and get results
-                        //List<Account> accountList = allAccounts.ToList();
-
-                        // Display all accounts
-                        //WriteLine("All Accounts:");
-                        //WriteLine("-------------");
-                        //foreach (Account account in accountList)
-                        //{
-                        //    WriteLine($"ID: {account.Id}");
-                        //    WriteLine($"Name: {account.FirstName} {account.LastName}");
-                        //    WriteLine($"Email: {account.EmailAddress}");
-                        //    WriteLine($"Created: {account.CreatedAt}");
-                        //    WriteLine($"Updated: {account.UpdatedAt}");
-                        //    WriteLine();
-                        //}
-
-                        // Return success with created account
-                        return Results.CreatedAtRoute("GetAccountById",
-                            new { id = newIdNumber },
-                            // this is the correct one 
-                            new
-                            {
-                                success = true, // Fixed syntax: use = not :
-                                message = "Account created successfully",
-                                data = newAccount // Fixed syntax: removed semicolon
-                            }
-                        );
-                    })
-                //.AddEndpointFilter<ValidateJsonFilter>()
+                    async (HttpContext context, AccountDb db) => await AddAccount(context, db))
                 .WithSummary("Register a new account")
                 .Accepts<IJsonAccountInput>("application/json")
-                //.Accepts<AccountData>("a")
                 .WithTags("Register")
                 .WithName("RegisterAccount")
                 .Produces<ApiResponseSuccess<AccountData>>(201)
                 .Produces<ApiResponseNull>(422)
                 .Produces<ApiResponseMalformed>(400)
-                .Produces<ApiResponseDuplicate>(409)
-                ;
+                .Produces<ApiResponseDuplicate>(409);
 
 
             app.Run();
         }
 
-
-        private static string RegisterUser(string username)
-        {
-            EmailSender email = new();
-            email.SendEmail(username);
-
-            return $"Email sent to {username}!";
-        }
+        
     }
 }
 
 
-public class EmailSender
-{
-    public void SendEmail(string username)
-    {
-        WriteLine(new string('-', 80) +
-                  $"\nThis should be seen only at the back end >>>  Email sent to {username}!");
-    }
-}
-
-
-public class AppDisplaySettings
-{
-    public string Title { get; set; }
-    public bool ShowCopyright { get; set; }
-}

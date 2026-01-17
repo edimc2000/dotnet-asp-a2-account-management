@@ -52,6 +52,20 @@ internal partial class Helper
 
 
 
+    //public static IResult AddSuccess(List<Account> newAccount)
+    public static IResult AddSuccess(Account newAccount, int newIdNumber)
+    {
+        return Results.CreatedAtRoute( "GetAccountById",new {id=newIdNumber},new
+        {
+            success = true,
+            message = "Account created successfully",
+            data = newAccount
+        });
+    }
+
+
+
+
 
     /// <summary>Returns formatted bad request response.</summary>
     /// <param name="message">Error message.</param>
