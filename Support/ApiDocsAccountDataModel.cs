@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AccountManagement;
+namespace AccountManagement.Support;
 
 /// <summary>
 /// Interface for account input data
@@ -41,6 +41,7 @@ public class AccountData : IJsonAccountInput
     /// Account holder's first name
     /// </summary>
     /// <example>John</example>
+     [Required]
     public required string FirstName { get; set; }
 
     /// <summary>
@@ -59,34 +60,3 @@ public class AccountData : IJsonAccountInput
 
 }
 
-public class UpdateAccount : IJsonAccountInput
-{
-
-    /// <summary>
-    /// Account holder's first name
-    /// </summary>
-    /// <example>John</example>
-    [StringLength(100, MinimumLength = 2)]
-    public  string FirstName { get; set; }
-
-    /// <summary>
-    /// Account holder's last name
-    /// </summary>
-    /// <example>Doe</example>
-    [StringLength(100, MinimumLength = 2)]
-    public  string LastName { get; set; }
-
-    /// <summary>
-    /// Account holder's email address
-    /// </summary>
-    /// <example>john.doe@example.com</example>
-    [EmailAddress]
-    public  string EmailAddress { get; set; }
-    
-    //[Required]
-    [DataType(DataType.DateTime)]
-    public DateTime? UpdatedAt { get; set; } 
-
-
-
-}

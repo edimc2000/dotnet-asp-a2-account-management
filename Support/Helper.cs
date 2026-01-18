@@ -1,18 +1,4 @@
-﻿//using AccountManagement.Support;
-
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
-//using static AccountManagement.Support.ProductSeed;
-
+﻿using System.Text.Json;
 
 namespace AccountManagement;
 
@@ -51,20 +37,38 @@ internal partial class Helper
     }
 
 
-
-    //public static IResult AddSuccess(List<Account> newAccount)
     public static IResult AddSuccess(Account newAccount, int newIdNumber)
     {
-        return Results.CreatedAtRoute( "GetAccountById",new {id=newIdNumber},new
-        {
-            success = true,
-            message = "Account created successfully",
-            data = newAccount
-        });
+        return Results.CreatedAtRoute("GetAccountById",
+            new { id = newIdNumber },
+            new
+            {
+                success = true,
+                message = "Account created successfully",
+                data = newAccount
+            });
     }
 
 
 
+    public static IResult UpdateSuccess(Dictionary<string, object?> changes)
+    {
+        if (changes.Count == 0)
+            return Results.Ok(new
+            {
+                success = true,
+                message =
+                    "Request processed successfully. No modifications made. Null fields and " +
+                    "empty values were ignored to preserve existing data."
+            });
+        else
+            return Results.Ok(new
+            {
+                success = true,
+                message = "Update successful",
+                changes = changes
+            });
+    }
 
 
     /// <summary>Returns formatted bad request response.</summary>
@@ -100,20 +104,30 @@ internal partial class Helper
     }
 
 
-
-    public static bool TryUpdatePropertyIfChanged<T>( bool hasChanges, 
-        T currentValue, T newValue, Action<T> setter)
+    public static (bool hasChanges, Dictionary<string, object?> changesDict)
+        TryUpdatePropertyIfChanged<T>
+        (
+            bool hasChanges,
+            T currentValue,
+            T newValue,
+            Action<T> setter,
+            Dictionary<string, object?> incomingChanges,
+            string propertyName
+        )
         where T : IEquatable<T>
     {
-        if (newValue != null && !currentValue.Equals(newValue))
+        bool isDifferent = (currentValue == null
+                               ? newValue != null
+                               : newValue == null || !currentValue.Equals(newValue))
+                           && !string.IsNullOrEmpty(newValue?.ToString());
+
+        if (isDifferent)
         {
             setter(newValue);
-            return true;
+            incomingChanges[propertyName] = newValue;
+            return (true, incomingChanges);
         }
-        return false;
+
+        return (false, incomingChanges);
     }
-
-
-
-
 }

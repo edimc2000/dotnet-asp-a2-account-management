@@ -1,10 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices.Marshalling;
-using Microsoft.EntityFrameworkCore;
-using static AccountManagement.Helper;
-using static AccountManagement.AccountEndpoints;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace AccountManagement;
+namespace AccountManagement.Support;
 
 public class DbOperation
 {

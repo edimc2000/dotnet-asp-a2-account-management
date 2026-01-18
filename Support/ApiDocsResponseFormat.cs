@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AccountManagement
+namespace AccountManagement.Support
 {
-    public class ApiResponseFormat
+    public class ApiDocsResponseFormat
     {
-    
         /// <summary>
         /// Response for successful API request
         /// </summary>
@@ -35,7 +34,6 @@ namespace AccountManagement
             {
                 get; set;
             }
-
         }
     
         /// <summary>
@@ -91,7 +89,6 @@ namespace AccountManagement
 
         }
 
-
         /// <summary>
         /// Response for API errors - JSON data Malformed 
         /// </summary>
@@ -129,7 +126,6 @@ namespace AccountManagement
             /// </summary>
             /// <example>'200a' is not a valid account Id</example>
             public required string Message { get; set; }
-
         }
 
 

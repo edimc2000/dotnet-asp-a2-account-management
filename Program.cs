@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AccountManagement.Support;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Context;
 using System.Diagnostics;
 using System.Reflection;
 using static AccountManagement.AccountEndpoints;
-using static AccountManagement.ApiResponseFormat;
+using static AccountManagement.Support.ApiDocsResponseFormat;
 
 
 namespace AccountManagement;
@@ -14,9 +15,6 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        //using AccountDb db = new();
-        //DbSet<Account> accounts = db.Accounts;
-
         // enhanced logging seri logging 
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
@@ -38,7 +36,6 @@ public class Program
 
         // swagger 
         builder.Services.AddEndpointsApiExplorer();
-        //builder.Services.AddSwaggerGen();
 
         // swagger page - configuration 
         builder.Services.AddSwaggerGen(opt =>
@@ -52,7 +49,6 @@ public class Program
                     Version = "1.1"
                 }
             );
-
 
             string file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, file));
@@ -84,9 +80,6 @@ public class Program
 
         WebApplication app = builder.Build();
 
-        // enabled static files serving for swagger UI reformatting
-        //app.UseStaticFiles();
-
         //seri logging 
         app.Use(async (context, next) =>
         {
@@ -113,7 +106,6 @@ public class Program
 
 
         // swagger  
-        app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Account API V1");
@@ -122,13 +114,19 @@ public class Program
             options.InjectStylesheet("/swagger-ui/custom.css");
         });
 
-        app.UseStaticFiles(); // enabled static files for swagger UI reformatting
+        app.UseSwagger();
+
+        // enabled static files to serve css to reformat swagger UI
+        app.UseStaticFiles();
+
         using (IServiceScope scope = app.Services.CreateScope())
         {
             AccountDb db = scope.ServiceProvider.GetRequiredService<AccountDb>();
             db.Database.Migrate(); // Apply any pending migrations
             db.Database.ExecuteSqlRaw("PRAGMA journal_mode = WAL;"); // Enable WAL
         }
+
+
 
         // search all - this is not required but good to have 
         app.MapGet("/account/search/all", SearchAll)
@@ -168,7 +166,7 @@ public class Program
             .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
 
-        //register new account 
+        // Register endpoint
         app.MapPost("/account/register",
                 async (HttpContext context, AccountDb db) => await AddAccount(context, db))
             .WithSummary("Register a new account")
@@ -180,26 +178,20 @@ public class Program
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
 
-
+        // Update endpoint
         app.MapPatch("/account/update/id/{id}",
-                async (HttpContext context, AccountDb db, string id) => await UpdateAccount(context, db, id))
+                async
+                    (HttpContext context, AccountDb db, string id) =>
+                    await UpdateAccount(context, db, id))
             .WithName("UpdateAccountById")
             .WithSummary("Update account using an account id")
             .WithTags("Update")
-            .Produces<ApiResponseSuccess<AccountData>>(200);
-        // got to match the info since this is not automated
+            .Accepts<IJsonAccountInput>("application/json")
+            .Produces<ApiResponseSuccess<AccountData>>(200)
+            .Produces<ApiResponseNull>(422)
+            .Produces<ApiResponseMalformed>(400)
+            .Produces<ApiResponseDuplicate>(409);
 
-
-
-
-        // this will be an option 
-        app.MapPut("/account/update/email/{email}",
-                (string id) => { return Results.Ok(new { message = $"Account {id}" }); })
-            .WithName("UpdateAccountByEmail")
-            .WithSummary("Update account using an email address")
-            .WithTags("Update")
-            .Produces<ApiResponseSuccess<AccountData>>(200);
-        // got to match the info since this is not automated
 
 
         app.Run();
