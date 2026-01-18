@@ -348,3 +348,5 @@ FodyWeavers.xsd
 /Properties
 /HtmlReport
 /Output
+/database/account(0).db
+/database/account(seed).db
