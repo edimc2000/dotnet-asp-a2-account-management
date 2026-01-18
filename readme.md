@@ -3,8 +3,9 @@ _AI - Deepseek was used in some parts of the codes. Those parts will have a comm
 
 
 # Account Management API - using ASP.NET
-This is an API implementation using ASP.Net demonstrating API endpoints basic account management operations.
+This is an API implementation using ASP.Net demonstrating API endpoints for basic account management.
 
+Operations: 
 - **creating/registering a new account** (Create using HTTP method `POST`),  
 - **reading/searching for an account or displaying all accounts** (Retrieve using HTTP method `GET`), 
 - **updating account data using the account Id** (Update using HTTP method `PATCH`) and 
@@ -145,12 +146,6 @@ Code `400` `Bad Request` `application/json`
 	  message: 'Validation failed: The EmailAddress field is not a valid e-mail address.'
 	}
 
-	
-
-Code `400` `Bad Request` `application/json` 
-
-	
-	example: 
 
 	{
 	  success: false,
@@ -230,7 +225,7 @@ Code `200` `OK` `application/json`
 
 Code `200` `OK` `application/json`
 
-	example: 
+	examples: 
 		
 	{
 	  success: true,
@@ -273,7 +268,7 @@ Code `400` `Bad Request` `application/json`
 
 Code `200` `OK` `application/json`
 
-	example: 
+	examples: 
 
 	{
 	  success: true,
@@ -340,7 +335,7 @@ Code `400` `Bad Request` `application/json`
 
 Code `200` `OK` `application/json`
 
-	example: 
+	examples: 
 
 	{
 	  success: true,
@@ -365,7 +360,7 @@ Code `200` `OK` `application/json`
 
 Code `400` `Bad Request` `application/json`
 
-	example: 
+	examples: 
 
 	{
 	  "success": false,
@@ -415,7 +410,7 @@ Code `200` `OK` `application/json`
 
 Code `400` `Bad Request` `application/json`
 
-	example: 
+	examples: 
 
 	{
 	  "success": false,
@@ -436,4 +431,26 @@ Test framework (Playwright) - https://github.com/edimc2000/dotnet-asp-a2-account
 
 ### Report Summary - Search all, by id, by email 
 ![report summary](Screenshots/1_pw_search_endpoint.png)
+
+### Report Summary - Register 
+![report summary](Screenshots/2_pw_register_endpoint.png)
+ 
+### Report Summary - Update 
+![report summary](Screenshots/3_pw_update_endpoint.png)
+
+### Report Summary - Delete
+![report summary](Screenshots/6_pw_sample_report_detail.png)
+
+### Report Sample Detail
+![report summary](Screenshots/4_pw_delete_endpoint.png)
+
+### Custom Swagger
+![report summary](Screenshots/5_custom_swagger_UI.png)
+
+
+
+## Contact
+If you have questions or need further changes, reply here or refer to the course materials.
+ 
+ 
  
