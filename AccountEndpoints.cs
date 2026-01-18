@@ -40,17 +40,15 @@ public class AccountEndpoints
 
         if (account == null)
             return BadRequest($"'{id}' is not a valid account Id");
-        
-        int[] restrictedIds = { 200, 201, 202, 203 };
+
         if (restrictedIds.Contains(parsedId))
             return BadRequest($"Account ID '{id}' is restricted and cannot be deleted");
 
-        db.Accounts.Remove(account); 
+        db.Accounts.Remove(account);
         await db.SaveChangesAsync();
 
-        return (DeleteSuccess());
+        return DeleteSuccess();
     }
-
 
 
     public static async Task<IResult> AddAccount(HttpContext context, AccountDb db)

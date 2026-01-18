@@ -8,6 +8,9 @@ namespace AccountManagement;
 /// <para>Date: Jan. 09, 2026</para>
 internal partial class Helper
 {
+
+    internal static int[] restrictedIds = { 200, 201, 202, 203 };
+
     // data conversion json element to account element 
 
     internal class InputDataConverter
