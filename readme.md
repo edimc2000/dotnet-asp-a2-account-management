@@ -65,7 +65,13 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 
 ## API Endpoints
 > [!NOTE]
-> The program automatically launches Swagger UI for API exploration. However, Swagger UI is limited to showing only one response example per status code. For a full reference of all possible response formats, please consult the documentation that follows.
+> Swagger UI is implemented but limited to single examples per status code. Refer below for complete response documentation
+
+### Create / Register new account
+
+** Endpoint ** 
+`POST` `/account/register`
+
 
 
 playwright report
