@@ -350,3 +350,6 @@ FodyWeavers.xsd
 /Output
 /database/account(0).db
 /database/account(seed).db
+/database/account.db-shm
+/database/account.db-wal
+/database/accountzzz.db
