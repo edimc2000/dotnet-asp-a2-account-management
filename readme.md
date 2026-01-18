@@ -439,10 +439,11 @@ Test framework (Playwright) - https://github.com/edimc2000/dotnet-asp-a2-account
 ![report summary](Screenshots/3_pw_update_endpoint.png)
 
 ### Report Summary - Delete
-![report summary](Screenshots/6_pw_sample_report_detail.png)
+![report summary](Screenshots/4_pw_delete_endpoint.png)
 
 ### Report Sample Detail
-![report summary](Screenshots/4_pw_delete_endpoint.png)
+![report summary](Screenshots/6_pw_sample_report_detail.png)
+
 
 ### Custom Swagger
 ![report summary](Screenshots/5_custom_swagger_UI.png)
