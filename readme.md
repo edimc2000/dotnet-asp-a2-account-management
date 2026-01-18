@@ -69,10 +69,20 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 
 ### Create / Register new account
 
-** Endpoint ** 
-`POST` `/account/register`
+**Endpoint** `POST` ```/account/register```
 
+**Parameters** `none`
 
+**Request Body (required)** `application/json`
 
+```
+example: 
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "emailAddress": "john.doe@example.com"
+}
+```
 playwright report
 https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 
