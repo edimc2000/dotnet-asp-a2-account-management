@@ -395,5 +395,45 @@ Code `409` `Conflict` `application/json`
 	  "message": "The email address is either tied to an account or cannot be used for registration"
 	}
 
-playwright report
-https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 
+
+
+### Delete using an account id 
+**Endpoint** `DELETE` ```/account/delete/id/{id}```
+
+**Parameters** `id`
+
+**Responses** 
+
+Code `200` `OK` `application/json`
+
+	example: 
+
+	{
+	  success: true,
+	  message: 'Account deleted successfully'
+	}
+
+Code `400` `Bad Request` `application/json`
+
+	example: 
+
+	{
+	  "success": false,
+	  "message": "'206a' is not a valid account Id"
+	}
+
+	{
+	  success: false,
+	  message: "Account ID '203' is restricted and cannot be deleted"
+	}
+
+
+
+
+## Test Capture / Report / Screenshots
+Test report can be found on this link - https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/
+Test framework (Playwright) - https://github.com/edimc2000/dotnet-asp-a2-account-management-playwright-tests
+
+### Report Summary - Search all, by id, by email 
+![report summart](screenshots/1_pw_search_endpoint.png)
+ 
