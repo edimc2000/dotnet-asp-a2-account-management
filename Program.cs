@@ -168,19 +168,21 @@ public class Program
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
-        
+
 
         // Delete using account Id endpoint
         app.MapDelete("/account/delete/id/{id}",
-            async (string id, AccountDb db) =>
-            {
-               IResult result = await DeleteById(id, db);
-                return result;
-            })            
+                async (string id, AccountDb db) =>
+                {
+                    IResult result = await DeleteById(id, db);
+                    return result;
+                })
             .WithName("DeleteAccountById")
             .WithSummary("Delete account using an account id")
-            .WithTags("4 - Delete"); 
- 
+            .WithTags("4 - Delete")
+            .Produces<ApiResponseDeleteFailed>(400)
+            .Produces<ApiResponseDeleteSuccess>(200);
+
 
         app.Run();
     }

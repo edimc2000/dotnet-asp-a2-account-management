@@ -43,7 +43,7 @@ public class AccountData : IJsonAccountInput
     /// Account holder's first name
     /// </summary>
     /// <example>John</example>
-     [Required]
+    [Required]
     public required string FirstName { get; set; }
 
     /// <summary>
@@ -57,8 +57,4 @@ public class AccountData : IJsonAccountInput
     /// </summary>
     /// <example>john.doe@example.com</example>
     public required string EmailAddress { get; set; }
-
-
-
 }
-

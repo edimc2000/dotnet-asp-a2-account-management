@@ -5,14 +5,13 @@ namespace AccountManagement;
 /// <summary>Helper methods for product API operations.</summary>
 /// <para>Author: Eddie C.</para>
 /// <para>Version: 1.0</para>
-/// <para>Date: Jan. 09, 2026</para>
+/// <para>Date: Jan. 17, 2026</para>
 internal partial class Helper
 {
-
+    /// <summary>Array of restricted account IDs that cannot be modified or deleted.</summary>
     internal static int[] restrictedIds = { 200, 201, 202, 203 };
 
-    // data conversion json element to account element 
-
+    /// <summary>Converts JSON elements to account input data properties.</summary>
     internal class InputDataConverter
     {
         public JsonElement FirstName { get; set; }
@@ -39,7 +38,10 @@ internal partial class Helper
         });
     }
 
-
+    /// <summary>Returns successful account creation response.</summary>
+    /// <param name="newAccount">The newly created Account object.</param>
+    /// <param name="newIdNumber">The ID number assigned to the new account.</param>
+    /// <returns>An IResult containing the success response with created account data.</returns>
     public static IResult AddSuccess(Account newAccount, int newIdNumber)
     {
         return Results.CreatedAtRoute("GetAccountById",
@@ -52,7 +54,8 @@ internal partial class Helper
             });
     }
 
-
+    /// <summary>Returns successful account deletion response.</summary>
+    /// <returns>An IResult containing the success response for account deletion.</returns>
     public static IResult DeleteSuccess()
     {
         return Results.Ok(
@@ -63,16 +66,17 @@ internal partial class Helper
             });
     }
 
-
+    /// <summary>Returns successful account update response.</summary>
+    /// <param name="changes">Dictionary containing the field names and values that were changed.</param>
+    /// <returns>An IResult containing the success response with update details.</returns>
     public static IResult UpdateSuccess(Dictionary<string, object?> changes)
     {
         if (changes.Count == 0)
             return Results.Ok(new
             {
                 success = true,
-                message =
-                    "Request processed successfully. No modifications made. Null fields and " +
-                    "empty values were ignored to preserve existing data."
+                message = "Request processed successfully. No modifications made. " +
+                          "Null fields and empty values were ignored to preserve existing data."
             });
         else
             return Results.Ok(new
@@ -86,15 +90,19 @@ internal partial class Helper
 
     /// <summary>Returns formatted bad request response.</summary>
     /// <param name="message">Error message.</param>
+    /// <returns>An IResult containing the bad request error response.</returns>
     public static IResult BadRequest(string message)
     {
         return Results.BadRequest(new
         {
             success = false,
-            message = $"{message}"
+            message = message
         });
     }
 
+    /// <summary>Returns formatted unprocessable entity response.</summary>
+    /// <param name="message">Error message explaining why the entity is unprocessable.</param>
+    /// <returns>An IResult containing the unprocessable entity error response.</returns>
     public static IResult UnprocessableEntity(string message)
     {
         return Results.UnprocessableEntity(new
@@ -105,8 +113,8 @@ internal partial class Helper
     }
 
 
-    /// <summary>Returns formatted bad request response.</summary>
-    /// <param name="message">Error message.</param>
+    /// <summary>Returns formatted conflict response for duplicate email addresses.</summary>
+    /// <returns>An IResult containing the conflict error response.</returns>
     public static IResult ConflictResult()
     {
         return Results.Conflict(new
@@ -117,7 +125,16 @@ internal partial class Helper
         });
     }
 
-
+    /// <summary>Attempts to update a property if the new value differs from the current value.</summary>
+    /// <typeparam name="T">The type of the property being compared.</typeparam>
+    /// <param name="hasChanges">Boolean indicating whether changes have already been detected.</param>
+    /// <param name="currentValue">The current value of the property.</param>
+    /// <param name="newValue">The new value to potentially assign to the property.</param>
+    /// <param name="setter">Action that sets the property value if changed.</param>
+    /// <param name="incomingChanges">Dictionary tracking changes made during update.</param>
+    /// <param name="propertyName">The name of the property being evaluated.</param>
+    /// <returns>A tuple containing boolean indicating if changes were made and the updated changes dictionary.</returns
+    // This function was created with AI - Deepseek assistance 
     public static (bool hasChanges, Dictionary<string, object?> changesDict)
         TryUpdatePropertyIfChanged<T>
         (
