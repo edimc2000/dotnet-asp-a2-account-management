@@ -66,6 +66,7 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 ## API Endpoints
 > [!NOTE]
 > Swagger UI is implemented but limited to single examples per status code. Refer below for complete response documentation
+> The sample data on the documentation are randomly generated from faker (npm js)
 
 ### Create / Register new account
 
@@ -167,6 +168,84 @@ Code `422` `Unprocessable Entity` `application/json`
 	  message: 'Malformed JSON in request body'
 	}
 
+
+### Read / Search all
+**Endpoint** `POST` ```/account/search/all```
+
+**Parameters** `none`
+
+**Responses** 
+
+Code `200` `OK` `application/json`
+
+	example: 
+
+	{
+	  success: true,
+	  message: 'Total of 4 accounts retrieved successfully',
+	  data: [
+		{
+		  id: 200,
+		  firstName: 'Evelyn',
+		  lastName: 'Choi',
+		  emailAddress: 'e.choi@gmail.com',
+		  createdAt: '2026-01-02T00:00:00',
+		  updatedAt: null
+		},
+		{
+		  id: 201,
+		  firstName: 'He',
+		  lastName: 'Peng',
+		  emailAddress: 'hp@noemail.com',
+		  createdAt: '2026-01-02T00:00:00',
+		  updatedAt: null
+		},
+		{
+		  id: 202,
+		  firstName: 'Kevin',
+		  lastName: 'Chia',
+		  emailAddress: 'kchia@singnet.sg',
+		  createdAt: '2026-01-02T00:00:00',
+		  updatedAt: null
+		},
+		{
+		  id: 203,
+		  firstName: 'Chelsea',
+		  lastName: 'Peterson',
+		  emailAddress: 'cpeters20@gmail.com',
+		  createdAt: '2026-01-02T00:00:00',
+		  updatedAt: null
+		}
+	  ]
+	}
+
+
+
+### Read / Search for account using an account id
+**Endpoint** `POST` ```/account/search/id{id}```
+
+**Parameters** `id`
+
+**Responses** 
+
+Code `200` `OK` `application/json`
+
+	example: 
+
+	{
+	  success: true,
+	  message: 'Account retrieved successfully',
+	  data: [
+		{
+		  id: 200,
+		  firstName: 'Evelyn',
+		  lastName: 'Choi',
+		  emailAddress: 'e.choi@gmail.com',
+		  createdAt: '2026-01-02T00:00:00',
+		  updatedAt: null
+		}
+	  ]
+	}
 
 playwright report
 https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 
