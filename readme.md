@@ -5,10 +5,10 @@ _AI - Deepseek was used in some parts of the codes. Those parts will have a comm
 # Account Management API - using ASP.NET
 This is an API implementation using ASP.Net demonstrating API endpoints basic account management operations.
 
-- **creating/registering a new account** (Create using Post method),  
-- **reading/serching for an account or displaying all accounts** (Retrieve using Get method), 
-- **updating account data using the account Id** (Update using Patch Method) and 
-- **deleting an account using the account Id** (Delete using Delete method) 
+- **creating/registering a new account** (Create using HTTP method `POST`),  
+- **reading/searching for an account or displaying all accounts** (Retrieve using HTTP method `GET`), 
+- **updating account data using the account Id** (Update using HTTP method `PATCH`) and 
+- **deleting an account using the account Id** (Delete using HTTP method `DELETE`) 
 
 
 ## Requirements
@@ -45,6 +45,25 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 
 ├───screenshots						// stores images for this readme file
 ```
+
+## Build and Run (powershell)
+
+- Restore dependencies 
+	```
+	dotnet restore
+	```
+
+- Build
+	```
+	dotnet build
+	```
+
+- Run
+	```
+	dotnet run
+	```
+
+
 
 playwright report
 https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 
