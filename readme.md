@@ -75,7 +75,6 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 
 **Request Body (required)** `application/json`
 
-	```
 	example: 
 
 		{
@@ -83,13 +82,11 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 		  "lastName": "Doe",
 		  "emailAddress": "john.doe@example.com"
 		}
-	```
-
+	
 **Responses** (depending on the body)  
 
 Code `201` `Created` `application/json`
 
-	```
 	example: 
 
 	{
@@ -104,22 +101,22 @@ Code `201` `Created` `application/json`
 		updatedAt: null
 		}
 	}
-	```
+	
 
 Code `409` `Conflict` `application/json` 
 
-	```
+	
 	example: 
 
 	{
 	  success: false,
 	  message: 'The email address is either tied to an account or cannot be used for registration'
 	}
-	```
+	
 
 Code `400` `Bad Request` `application/json` 
 
-	```
+	
 	examples: 
 
 	{
@@ -147,11 +144,11 @@ Code `400` `Bad Request` `application/json`
 	  message: 'Validation failed: The EmailAddress field is not a valid e-mail address.'
 	}
 
-	```
+	
 
 Code `400` `Bad Request` `application/json` 
 
-	```
+	
 	example: 
 
 	{
@@ -162,7 +159,7 @@ Code `400` `Bad Request` `application/json`
 
 Code `422` `Unprocessable Entity` `application/json` 
 
-	```
+	
 	example: 
 
 	{
