@@ -58,26 +58,6 @@ public class Program
             opt.SelectDiscriminatorValueUsing(type => type.Name);
         });
 
-        ////******** these are optional environment variables and secrets which might not be
-        //// required 
-        //builder.Configuration.Sources.Clear();
-        //builder.Configuration
-        //    .AddJsonFile("sharedSettings.json", true);
-        //builder.Configuration.AddJsonFile("appsettings.json", true, true);
-        //builder.Configuration.AddEnvironmentVariables();
-        //builder.Configuration.AddJsonFile("secrets2.json", true, true);
-
-        //builder.Services.Configure<AppDisplaySettings>(
-        //    builder.Configuration.GetSection("AppDisplaySettings"));
-        ////******** these are optional environment variables and secrets which might not be
-        //// required 
-
-        ////if (builder.Environment.IsDevelopment())
-        ////{
-        ////    builder.Configuration.AddUserSecrets<Program>();
-        ////}
-
-
         WebApplication app = builder.Build();
 
         //seri logging 
@@ -90,7 +70,7 @@ public class Program
                 endpoint?.DisplayName ?? context.Request.Path);
 
             // Log request start
-            Log.Information("\n-----\nRequest started: {Method} {Path}",
+            Log.Information("********** Request started: {Method} {Path}",
                 context.Request.Method,
                 context.Request.Path);
 
@@ -99,7 +79,8 @@ public class Program
             sw.Stop();
 
             // Log request completion
-            Log.Information("Request completed in {ElapsedMilliseconds}ms with {StatusCode}",
+            Log.Information(
+                "********** Request completed in {ElapsedMilliseconds}ms with {StatusCode}",
                 sw.ElapsedMilliseconds,
                 context.Response.StatusCode);
         });
@@ -127,35 +108,31 @@ public class Program
         }
 
 
-
-        // search all - this is not required but good to have 
+        // Search all Endpoint - this is not required but good to have 
         app.MapGet("/account/search/all", SearchAll)
             .WithName("Search")
             .WithTags("Search")
             .Produces<
                 ApiSearchResponseFormat<Account[]>>(
-                200); // got to match the info since this is not automated;
+                200);
 
-        // search by id
+        // Search by id Endpoint
         app.MapGet("/account/search/id/{id}",
                 async (string id, AccountDb db) =>
                 {
                     (IResult result, int counter) result = await SearchById(id, db);
                     return result.result;
-                }
-            )
+                })
             .WithName("GetAccountById")
             .WithSummary("Search for account using an account id")
             .WithTags("Search")
             .Produces<ApiResponseFail>(400)
             .Produces<
-                ApiSearchResponseFormat<Account[]>>(
-                200); // got to match the info since this is not automated
+                ApiSearchResponseFormat<Account[]>>(200);
 
-        // search by email 
+        // Search by email Endpoint
         app.MapGet("/account/search/email/{email}",
-                async
-                    (string email, AccountDb db) =>
+                async (string email, AccountDb db) =>
                 {
                     (IResult result, int counter) result = await SearchByEmail(email, db);
                     return result.result;
@@ -170,9 +147,9 @@ public class Program
         app.MapPost("/account/register",
                 async (HttpContext context, AccountDb db) => await AddAccount(context, db))
             .WithSummary("Register a new account")
-            .Accepts<IJsonAccountInput>("application/json")
             .WithTags("Register")
             .WithName("RegisterAccount")
+            .Accepts<IJsonAccountInput>("application/json")
             .Produces<ApiResponseSuccess<AccountData>>(201)
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
@@ -180,8 +157,7 @@ public class Program
 
         // Update endpoint
         app.MapPatch("/account/update/id/{id}",
-                async
-                    (HttpContext context, AccountDb db, string id) =>
+                async (HttpContext context, AccountDb db, string id) =>
                     await UpdateAccount(context, db, id))
             .WithName("UpdateAccountById")
             .WithSummary("Update account using an account id")
@@ -191,9 +167,7 @@ public class Program
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
-
-
-
+        
         app.Run();
     }
 }

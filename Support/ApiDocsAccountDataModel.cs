@@ -2,6 +2,8 @@
 
 namespace AccountManagement.Support;
 
+// file used for swagger custom parameters and responses
+
 /// <summary>
 /// Interface for account input data
 /// </summary>

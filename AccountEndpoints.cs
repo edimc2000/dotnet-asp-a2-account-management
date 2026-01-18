@@ -18,11 +18,10 @@ public class AccountEndpoints
     {
         if (!int.TryParse(id, out int parsedId))
             return (BadRequest($"'{id}' is not a valid account Id"), 0);
-        List<Account> result = await Search(db, parsedId);
 
+        List<Account> result = await Search(db, parsedId);
         return (SearchSuccess(result), result.Count);
     }
-
 
     public static async Task<(IResult result, int counter)> SearchByEmail
         (string email, AccountDb db)
@@ -43,13 +42,6 @@ public class AccountEndpoints
         string lastName = dataConverter.LastName.ToString();
         string emailAddress = dataConverter.EmailAddress.ToString();
 
-        WriteLine(
-            $"-- data received (INPUT ---\n --- with valid json format ---\n" +
-            $"   >>>> newID: {newIdNumber}" +
-            $"FirstName: {dataConverter.FirstName}");
-        WriteLine($"   >>>> LastName: {dataConverter.LastName}");
-        WriteLine($"   >>>>* EmailAddress: {dataConverter.EmailAddress}");
-
         Account newAccount = new()
         {
             Id = newIdNumber,
@@ -58,7 +50,6 @@ public class AccountEndpoints
             EmailAddress = emailAddress
             //CreatedAt =  DateTime.UtcNow
         };
-
 
         ValidationContext validationContext = new(newAccount);
         List<ValidationResult> validationResults = new();
@@ -76,14 +67,9 @@ public class AccountEndpoints
 
 
         int emailCount = SearchByEmail(emailAddress, db).Result.counter;
-        WriteLine(
-            $"--- CHECKING FOR EXISTING RECORD - email record count {emailCount}---\n");
 
         if (emailCount != 0)
-            return ConflictResult(
-                $"The email address is either tied to an account or cannot be used for registration");
-
-        WriteLine("    --- add account module --- ");
+            return ConflictResult();
 
         db.Add(newAccount);
         await db.SaveChangesAsync();
@@ -97,57 +83,25 @@ public class AccountEndpoints
             await TryReadJsonBodyAsync<InputDataConverter>(context.Request);
 
 
-
-
         if (error != null)
             return error;
 
         if (!int.TryParse(id, out int parsedId))
             return BadRequest($"'{id}' is not a valid account Id");
 
-        WriteLine(
-            $"-- data received (INPUT ---\n --- with valid json format ---\n" +
-            $"   >>>> n" +
-            $"FirstName: {dataConverter.FirstName}");
-        WriteLine($"   >>>> LastName: {dataConverter.LastName}");
-        WriteLine($"   >>>>* EmailAddress: {dataConverter.EmailAddress}");
-
-
         bool hasChanges = false;
-        // int queryId = parsedId;
+
         string firstName = dataConverter.FirstName.ToString();
         string lastName = dataConverter.LastName.ToString() ?? null;
         string emailAddress = dataConverter.EmailAddress.ToString();
 
-
-        //UpdateAccount? updateAccountIncoming = new()
-        //{
-        //    UpdatedAt=DateTime.UtcNow 
-
-        //};
-      
-
         Account? account = await db.Accounts.FindAsync(parsedId);
-        //Account? account = await db.Accounts
-        //    .AsNoTracking()
-        //    .FirstOrDefaultAsync(a => a.Id == parsedId);
-        
 
-        if (account == null )
+        if (account == null)
             return BadRequest($"'{id}' is not a valid account Id");
 
-        WriteLine($"Account Details: ");
-        WriteLine($"  ID: {account.Id}");
-        WriteLine($"  First Name: {account.FirstName}");
-        WriteLine($"  Last Name: {account.LastName}");
-        WriteLine($"  Email: {account.EmailAddress}");
-        WriteLine($"  Created At: {account.CreatedAt}");
-        WriteLine($"  Updated At: {account.UpdatedAt}");
 
-
-        //UpdateAccountProperty(updateAccountIncoming, "LastName", lastName, account);
-
-        Dictionary <string, object?> changes = new ();
+        Dictionary<string, object?> changes = new();
 
         // Check if email is being changed to an existing email
         if (emailAddress != account.EmailAddress)
@@ -156,48 +110,42 @@ public class AccountEndpoints
                 .AnyAsync(a => a.EmailAddress == emailAddress);
 
             if (emailExists)
-                return ConflictResult($"The email address is either tied to an account or cannot be used for registration");
+                return ConflictResult();
         }
 
-  
-        // first name 
-        (bool nameChanged, changes) = TryUpdatePropertyIfChanged( hasChanges, 
-            account.FirstName, firstName, 
-            value => account.FirstName = value, changes, "FirstName");
 
-        // last name 
-        (bool lastNameChanged, changes) = TryUpdatePropertyIfChanged( hasChanges, 
-            account.LastName, lastName, 
-            value => account.LastName = value, changes, "LastName");
+        // FirstName: update value only when there is a change,
+        // null and empty will be ignored to preserve data 
+        (bool nameChanged, changes) = TryUpdatePropertyIfChanged(hasChanges,
+            account.FirstName,
+            firstName,
+            value => account.FirstName = value,
+            changes,
+            "FirstName");
 
-        // email 
-        (bool emailChanged, changes) = TryUpdatePropertyIfChanged( hasChanges, 
-            account.EmailAddress, emailAddress, 
-            value => account.EmailAddress = value, changes, "EmailAddress");
+        // LastName: update value only when there is a change,
+        // null and empty will be ignored to preserve data 
+        (bool lastNameChanged, changes) = TryUpdatePropertyIfChanged(hasChanges,
+            account.LastName,
+            lastName,
+            value => account.LastName = value,
+            changes,
+            "LastName");
+
+        // EmailAddress: update value only when there is a change,
+        // null and empty will be ignored to preserve data 
+        (bool emailChanged, changes) = TryUpdatePropertyIfChanged(hasChanges,
+            account.EmailAddress,
+            emailAddress,
+            value => account.EmailAddress = value,
+            changes,
+            "EmailAddress");
 
         hasChanges = nameChanged || lastNameChanged || emailChanged;
 
         account.UpdatedAt = DateTime.UtcNow;
-        if (hasChanges)
-        {
-            WriteLine("       ------------THERE ARE CHANGES");
-            await db.SaveChangesAsync();
-        }
-        else
-        {
-            WriteLine("       ------------NO CHANGES");
-        }
+        if (hasChanges) await db.SaveChangesAsync();
 
-
-        //await db.SaveChangesAsync();
-            //return true;
-
-            //GetRequiredPropertyNames();
-            //ListObjectProperties(changes);
-
-            //List<KeyValuePair<string, object?>> changesList = changes.ToList();
-            //changes.ToList(); ?
-        //return UpdateSuccess(changes);
         return UpdateSuccess(changes);
     }
 }

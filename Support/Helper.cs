@@ -50,7 +50,6 @@ internal partial class Helper
     }
 
 
-
     public static IResult UpdateSuccess(Dictionary<string, object?> changes)
     {
         if (changes.Count == 0)
@@ -94,12 +93,13 @@ internal partial class Helper
 
     /// <summary>Returns formatted bad request response.</summary>
     /// <param name="message">Error message.</param>
-    public static IResult ConflictResult(string message)
+    public static IResult ConflictResult()
     {
         return Results.Conflict(new
         {
             success = false,
-            message = $"{message}"
+            message = $"The email address is either tied to an account or cannot be used " +
+                      $"for registration"
         });
     }
 

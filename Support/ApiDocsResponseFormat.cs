@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿
+// file used for swagger custom parameters and responses
 
 namespace AccountManagement.Support
 {
