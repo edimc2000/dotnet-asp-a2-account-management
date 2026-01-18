@@ -63,6 +63,9 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 	dotnet run
 	```
 
+## API Endpoints
+> [!NOTE]
+> The program automatically launches Swagger UI for API exploration. However, Swagger UI is limited to showing only one response example per status code. For a full reference of all possible response formats, please consult the documentation that follows.
 
 
 playwright report
