@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace AccountManagement;
+namespace AccountManagement.Support;
 
 /// <summary>Helper methods for product API operations.</summary>
 /// <para>Author: Eddie C.</para>
