@@ -85,9 +85,9 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 		}
 	```
 
-**Responses** 
+**Responses** (depending on the body)  
 
-`application/json` Code `201` `Created`
+Code `201` `Created` `application/json`
 
 	```
 	example: 
@@ -106,7 +106,7 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 	}
 	```
 
-`application/json` Code `409` `Conflict`
+Code `409` `Conflict` `application/json` 
 
 	```
 	example: 
@@ -116,6 +116,59 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 	  message: 'The email address is either tied to an account or cannot be used for registration'
 	}
 	```
+
+Code `400` `Bad Request` `application/json` 
+
+	```
+	examples: 
+
+	{
+	  success: false,
+	  message: 'Validation failed: The FirstName field is required.; The LastName field is required.; The EmailAddress field is required.'
+	}
+
+	{
+	  success: false,
+	  message: 'Validation failed: The FirstName field is required.'
+	}
+
+	{
+	  success: false,
+	  message: 'Validation failed: The LastName field is required.'
+	}
+
+	{
+	  success: false,
+	  message: 'Validation failed: The EmailAddress field is required.'
+	}
+
+	{
+	  success: false,
+	  message: 'Validation failed: The EmailAddress field is not a valid e-mail address.'
+	}
+
+	```
+
+Code `400` `Bad Request` `application/json` 
+
+	```
+	example: 
+
+	{
+	  success: false,
+	  message: 'Request body is empty'
+	}
+
+
+Code `422` `Unprocessable Entity` `application/json` 
+
+	```
+	example: 
+
+	{
+	  success: false,
+	  message: 'Malformed JSON in request body'
+	}
 
 
 playwright report
