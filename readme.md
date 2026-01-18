@@ -78,25 +78,43 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 	```
 	example: 
 
-	{
-	  "firstName": "John",
-	  "lastName": "Doe",
-	  "emailAddress": "john.doe@example.com"
-	}
+		{
+		  "firstName": "John",
+		  "lastName": "Doe",
+		  "emailAddress": "john.doe@example.com"
+		}
 	```
 
-**Responses** `application/json`
-Code `201`
+**Responses** `application/json` Code `201` `Created`
 
 	```
 	example: 
 
 	{
-	  "firstName": "John",
-	  "lastName": "Doe",
-	  "emailAddress": "john.doe@example.com"
+	  success: true,
+	  message: 'Account created successfully',
+	  data: {
+		id: 204,
+		firstName: 'Rodney',
+		lastName: 'Cabella',
+		emailAddress: 'rc1@noemail.com',
+		createdAt: '2026-01-18T20:22:30',
+		updatedAt: null
+		}
 	}
 	```
+
+**Responses** `application/json` Code `409` `Conflict`
+
+	```
+	example: 
+
+	{
+	  success: false,
+	  message: 'The email address is either tied to an account or cannot be used for registration'
+	}
+	```
+
 
 playwright report
 https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 
