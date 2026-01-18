@@ -50,6 +50,17 @@ internal partial class Helper
     }
 
 
+    public static IResult DeleteSuccess()
+    {
+        return Results.Ok(
+            new
+            {
+                success = true,
+                message = "Account deleted successfully"
+            });
+    }
+
+
     public static IResult UpdateSuccess(Dictionary<string, object?> changes)
     {
         if (changes.Count == 0)

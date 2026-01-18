@@ -111,7 +111,8 @@ public class Program
         // Search all Endpoint - this is not required but good to have 
         app.MapGet("/account/search/all", SearchAll)
             .WithName("Search")
-            .WithTags("Search")
+            .WithSummary("Retrieve all accounts")
+            .WithTags("2 - Read (Search)")
             .Produces<
                 ApiSearchResponseFormat<Account[]>>(
                 200);
@@ -125,7 +126,7 @@ public class Program
                 })
             .WithName("GetAccountById")
             .WithSummary("Search for account using an account id")
-            .WithTags("Search")
+            .WithTags("2 - Read (Search)")
             .Produces<ApiResponseFail>(400)
             .Produces<
                 ApiSearchResponseFormat<Account[]>>(200);
@@ -139,7 +140,7 @@ public class Program
                 })
             .WithName("GetAccountByEmail")
             .WithSummary("Search for account using an email address")
-            .WithTags("Search")
+            .WithTags("2 - Read (Search)")
             .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
 
@@ -147,27 +148,40 @@ public class Program
         app.MapPost("/account/register",
                 async (HttpContext context, AccountDb db) => await AddAccount(context, db))
             .WithSummary("Register a new account")
-            .WithTags("Register")
             .WithName("RegisterAccount")
+            .WithTags("1 - Create (Register)")
             .Accepts<IJsonAccountInput>("application/json")
             .Produces<ApiResponseSuccess<AccountData>>(201)
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
 
-        // Update endpoint
+        // Update using account Id endpoint
         app.MapPatch("/account/update/id/{id}",
                 async (HttpContext context, AccountDb db, string id) =>
                     await UpdateAccount(context, db, id))
             .WithName("UpdateAccountById")
             .WithSummary("Update account using an account id")
-            .WithTags("Update")
+            .WithTags("3 - Update")
             .Accepts<IJsonAccountInput>("application/json")
             .Produces<ApiResponseSuccess<AccountData>>(200)
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
         
+
+        // Delete using account Id endpoint
+        app.MapDelete("/account/delete/id/{id}",
+            async (string id, AccountDb db) =>
+            {
+               IResult result = await DeleteById(id, db);
+                return result;
+            })            
+            .WithName("DeleteAccountById")
+            .WithSummary("Delete account using an account id")
+            .WithTags("4 - Delete"); 
+ 
+
         app.Run();
     }
 }

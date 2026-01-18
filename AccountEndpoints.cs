@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using static AccountManagement.Support.DbOperation;
 using static AccountManagement.Helper;
@@ -29,6 +28,29 @@ public class AccountEndpoints
         List<Account> result = await Search(db, null, email);
         return (SearchSuccess(result), result.Count);
     }
+
+
+    public static async Task<IResult> DeleteById
+        (string id, AccountDb db)
+    {
+        if (!int.TryParse(id, out int parsedId))
+            return BadRequest($"'{id}' is not a valid account Id");
+
+        Account? account = await db.Accounts.FindAsync(parsedId);
+
+        if (account == null)
+            return BadRequest($"'{id}' is not a valid account Id");
+        
+        int[] restrictedIds = { 200, 201, 202, 203 };
+        if (restrictedIds.Contains(parsedId))
+            return BadRequest($"Account ID '{id}' is restricted and cannot be deleted");
+
+        db.Accounts.Remove(account); 
+        await db.SaveChangesAsync();
+
+        return (DeleteSuccess());
+    }
+
 
 
     public static async Task<IResult> AddAccount(HttpContext context, AccountDb db)
