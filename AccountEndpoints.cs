@@ -68,7 +68,6 @@ public class AccountEndpoints
             FirstName = firstName,
             LastName = lastName,
             EmailAddress = emailAddress
-            //CreatedAt =  DateTime.UtcNow
         };
 
         ValidationContext validationContext = new(newAccount);
@@ -109,10 +108,14 @@ public class AccountEndpoints
         if (!int.TryParse(id, out int parsedId))
             return BadRequest($"'{id}' is not a valid account Id");
 
+
+        if (restrictedIds.Contains(parsedId))
+            return BadRequest($"Account ID '{id}' is restricted and cannot be updated");
+
         bool hasChanges = false;
 
         string firstName = dataConverter.FirstName.ToString();
-        string lastName = dataConverter.LastName.ToString() ?? null;
+        string lastName = dataConverter.LastName.ToString();
         string emailAddress = dataConverter.EmailAddress.ToString();
 
         Account? account = await db.Accounts.FindAsync(parsedId);
