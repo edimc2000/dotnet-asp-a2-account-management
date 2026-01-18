@@ -170,7 +170,7 @@ Code `422` `Unprocessable Entity` `application/json`
 
 
 ### Read / Search all
-**Endpoint** `POST` ```/account/search/all```
+**Endpoint** `GET` ```/account/search/all```
 
 **Parameters** `none`
 
@@ -222,7 +222,7 @@ Code `200` `OK` `application/json`
 
 
 ### Read / Search for account using an account id
-**Endpoint** `POST` ```/account/search/id{id}```
+**Endpoint** `GET` ```/account/search/id{id}```
 
 **Parameters** `id`
 
@@ -231,8 +231,7 @@ Code `200` `OK` `application/json`
 Code `200` `OK` `application/json`
 
 	example: 
-
-	
+		
 	{
 	  success: true,
 	  message: 'Account retrieved successfully',
@@ -266,7 +265,7 @@ Code `400` `Bad Request` `application/json`
 
 
 ### Read / Search for account using an email address
-**Endpoint** `POST` ```/account/search/id{email}```
+**Endpoint** `GET` ```/account/search/id{email}```
 
 **Parameters** `email`
 
@@ -328,6 +327,72 @@ Code `400` `Bad Request` `application/json`
 	{
 	  "success": false,
 	  "message": "'200a' is not a valid account Id"
+	}
+
+
+
+### Update using an account id 
+**Endpoint** `PATCH` ```/account/update/id/{id}```
+
+**Parameters** `id`
+
+**Responses** 
+
+Code `200` `OK` `application/json`
+
+	example: 
+
+	{
+	  success: true,
+	  message: 'Update successful',
+	  changes: {
+		FirstName: 'firstNameTest41',
+		LastName: 'lastNameTest41',
+		EmailAddress: '41EmailTest@gmail.com'
+	  }
+	}
+
+	{
+	  success: true,
+	  message: 'Request processed successfully. No modifications made. Null fields and empty values were ignored to preserve existing data.'
+	}
+
+	{
+	  success: true,
+	  message: 'Update successful',
+	  changes: { FirstName: 'Miles', LastName: 'Morales' }
+	}
+
+Code `400` `Bad Request` `application/json`
+
+	example: 
+
+	{
+	  "success": false,
+	  "message": "Request body is empty"
+	}
+
+	{
+	  success: false,
+	  message: "Account ID '203' is restricted and cannot be updated"
+	}
+
+Code `422` `Unprocessable Entity` `application/json`
+
+	example: 
+
+	{
+	  "success": false,
+	  "message": "Malformed JSON in request body"
+	}
+
+Code `409` `Conflict` `application/json`
+
+	example: 
+
+	{
+	  "success": false,
+	  "message": "The email address is either tied to an account or cannot be used for registration"
 	}
 
 playwright report
