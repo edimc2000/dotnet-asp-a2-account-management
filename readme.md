@@ -75,14 +75,28 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 
 **Request Body (required)** `application/json`
 
-```
-example: 
+	```
+	example: 
 
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "emailAddress": "john.doe@example.com"
-}
-```
+	{
+	  "firstName": "John",
+	  "lastName": "Doe",
+	  "emailAddress": "john.doe@example.com"
+	}
+	```
+
+**Responses** `application/json`
+Code `201`
+
+	```
+	example: 
+
+	{
+	  "firstName": "John",
+	  "lastName": "Doe",
+	  "emailAddress": "john.doe@example.com"
+	}
+	```
+
 playwright report
 https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 
