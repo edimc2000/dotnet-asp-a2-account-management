@@ -85,7 +85,9 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 		}
 	```
 
-**Responses** `application/json` Code `201` `Created`
+**Responses** 
+
+`application/json` Code `201` `Created`
 
 	```
 	example: 
@@ -104,7 +106,7 @@ This is an API implementation using ASP.Net demonstrating API endpoints basic ac
 	}
 	```
 
-**Responses** `application/json` Code `409` `Conflict`
+`application/json` Code `409` `Conflict`
 
 	```
 	example: 
