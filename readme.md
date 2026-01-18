@@ -435,5 +435,5 @@ Test report can be found on this link - https://edimc2000.github.io/dotnet-asp-a
 Test framework (Playwright) - https://github.com/edimc2000/dotnet-asp-a2-account-management-playwright-tests
 
 ### Report Summary - Search all, by id, by email 
-![report summart](screenshots/1_pw_search_endpoint.png)
+![report summary](Screenshots/1_pw_search_endpoint.png)
  
