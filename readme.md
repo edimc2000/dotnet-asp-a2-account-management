@@ -247,5 +247,63 @@ Code `200` `OK` `application/json`
 	  ]
 	}
 
+	{
+	  success: true,
+	  message: 'There are no accounts on the database',
+	  data: []
+	}
+
+Code `400` `Bad Request` `application/json`
+
+	example: 
+
+	{
+	  "success": false,
+	  "message": "'200a' is not a valid account Id"
+	}
+
+
+
+### Read / Search for account using an email address
+**Endpoint** `POST` ```/account/search/id{email}```
+
+**Parameters** `email`
+
+**Responses** 
+
+Code `200` `OK` `application/json`
+
+	example: 
+
+	{
+	  success: true,
+	  message: 'Account retrieved successfully',
+	  data: [
+		{
+		  id: 200,
+		  firstName: 'Evelyn',
+		  lastName: 'Choi',
+		  emailAddress: 'e.choi@gmail.com',
+		  createdAt: '2026-01-02T00:00:00',
+		  updatedAt: null
+		}
+	  ]
+	}
+
+	{
+	  success: true,
+	  message: 'There are no accounts on the database',
+	  data: []
+	}
+
+Code `400` `Bad Request` `application/json`
+
+	example: 
+
+	{
+	  "success": false,
+	  "message": "'200a' is not a valid account Id"
+	}
+
 playwright report
 https://edimc2000.github.io/dotnet-asp-a2-account-management-playwright-tests/ 

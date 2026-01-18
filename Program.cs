@@ -18,7 +18,6 @@ namespace AccountManagement;
 /// <para>Date: Jan. 18, 2026</para>
 public class Program
 {
- 
     /// <summary>Main entry point for the application.</summary>
     public static void Main(string[] args)
     {
@@ -119,9 +118,7 @@ public class Program
             .WithName("Search")
             .WithSummary("Retrieve all accounts")
             .WithTags("2 - Read (Search)")
-            .Produces<
-                ApiSearchResponseFormat<Account[]>>(
-                200);
+            .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
         // Search by id endpoint
         app.MapGet("/account/search/id/{id}",
@@ -134,8 +131,7 @@ public class Program
             .WithSummary("Search for account using an account id")
             .WithTags("2 - Read (Search)")
             .Produces<ApiResponseFail>(400)
-            .Produces<
-                ApiSearchResponseFormat<Account[]>>(200);
+            .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
         // Search by email endpoint
         app.MapGet("/account/search/email/{email}",
@@ -147,6 +143,7 @@ public class Program
             .WithName("GetAccountByEmail")
             .WithSummary("Search for account using an email address")
             .WithTags("2 - Read (Search)")
+            .Produces<ApiResponseFail>(400)
             .Produces<ApiSearchResponseFormat<Account[]>>(200);
 
 
@@ -174,7 +171,7 @@ public class Program
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
-        
+
         // Delete using account Id endpoint
         app.MapDelete("/account/delete/id/{id}",
                 async (string id, AccountDb db) =>
@@ -187,7 +184,7 @@ public class Program
             .WithTags("4 - Delete")
             .Produces<ApiResponseDeleteFailed>(400)
             .Produces<ApiResponseDeleteSuccess>(200);
-        
+
         app.Run();
     }
 }
