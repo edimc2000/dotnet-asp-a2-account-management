@@ -12,11 +12,17 @@ using static AccountManagement.Support.ApiDocsResponseFormat;
 
 namespace AccountManagement;
 
+/// <summary>>Main program class for the Account Management API.</summary>
+/// <para>Author: Eddie C.</para>
+/// <para>Version: 1.0</para>
+/// <para>Date: Jan. 18, 2026</para>
 public class Program
 {
+ 
+    /// <summary>Main entry point for the application.</summary>
     public static void Main(string[] args)
     {
-        // enhanced logging seri logging 
+        // Enhanced logging using SeriLog 
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console(outputTemplate:
@@ -26,19 +32,18 @@ public class Program
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        // seri log 
+        // SeriLog 
         builder.Host.UseSerilog();
 
         builder.Services.AddControllers();
         builder.Services.AddDbContext<AccountDb>(options =>
-                // the connection string should be a secret / configuration variable 
                 options.UseSqlite("Data Source=./account.db"),
             ServiceLifetime.Scoped); // Each request gets its own instance
 
-        // swagger 
+        // Swagger 
         builder.Services.AddEndpointsApiExplorer();
 
-        // swagger page - configuration 
+        // Swagger page - configuration 
         builder.Services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1",
@@ -61,7 +66,7 @@ public class Program
 
         WebApplication app = builder.Build();
 
-        //seri logging 
+        // SeriLog
         app.Use(async (context, next) =>
         {
             Endpoint? endpoint = context.GetEndpoint();
@@ -87,7 +92,7 @@ public class Program
         });
 
 
-        // swagger  
+        // Swagger  
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Account API V1");
@@ -98,7 +103,7 @@ public class Program
 
         app.UseSwagger();
 
-        // enabled static files to serve css to reformat swagger UI
+        // Enabled static files to serve css to reformat Swagger UI
         app.UseStaticFiles();
 
         using (IServiceScope scope = app.Services.CreateScope())
@@ -109,7 +114,7 @@ public class Program
         }
 
 
-        // Search all Endpoint - this is not required but good to have 
+        // Search all endpoint - this is not required but good to have 
         app.MapGet("/account/search/all", SearchAll)
             .WithName("Search")
             .WithSummary("Retrieve all accounts")
@@ -118,7 +123,7 @@ public class Program
                 ApiSearchResponseFormat<Account[]>>(
                 200);
 
-        // Search by id Endpoint
+        // Search by id endpoint
         app.MapGet("/account/search/id/{id}",
                 async (string id, AccountDb db) =>
                 {
@@ -132,7 +137,7 @@ public class Program
             .Produces<
                 ApiSearchResponseFormat<Account[]>>(200);
 
-        // Search by email Endpoint
+        // Search by email endpoint
         app.MapGet("/account/search/email/{email}",
                 async (string email, AccountDb db) =>
                 {
@@ -169,8 +174,7 @@ public class Program
             .Produces<ApiResponseNull>(422)
             .Produces<ApiResponseMalformed>(400)
             .Produces<ApiResponseDuplicate>(409);
-
-
+        
         // Delete using account Id endpoint
         app.MapDelete("/account/delete/id/{id}",
                 async (string id, AccountDb db) =>
@@ -183,8 +187,7 @@ public class Program
             .WithTags("4 - Delete")
             .Produces<ApiResponseDeleteFailed>(400)
             .Produces<ApiResponseDeleteSuccess>(200);
-
-
+        
         app.Run();
     }
 }

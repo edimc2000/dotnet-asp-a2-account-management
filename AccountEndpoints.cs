@@ -7,14 +7,22 @@ using static AccountManagement.Support.Helper;
 
 namespace AccountManagement;
 
+/// <summary>Contains endpoint methods for account management operations.</summary>
 public class AccountEndpoints
 {
+    /// <summary>Searches for and returns all accounts in the database.</summary>
+    /// <param name="db">The database context for account operations.</param>
+    /// <returns>An IResult containing the search results.</returns>
     public static async Task<IResult> SearchAll(AccountDb db)
     {
         List<Account> result = await Search(db);
         return SearchSuccess(result);
     }
 
+    /// <summary>Searches for an account by its ID.</summary>
+    /// <param name="id">The account ID to search for.</param>
+    /// <param name="db">The database context for account operations.</param>
+    /// <returns>A tuple containing the IResult response and the count of matching accounts.</returns>
     public static async Task<(IResult result, int counter)> SearchById(string id, AccountDb db)
     {
         if (!int.TryParse(id, out int parsedId))
@@ -24,6 +32,10 @@ public class AccountEndpoints
         return (SearchSuccess(result), result.Count);
     }
 
+    /// <summary>Searches for accounts by email address or fragment.</summary>
+    /// <param name="email">The email address or fragment to search for.</param>
+    /// <param name="db">The database context for account operations.</param>
+    /// <returns>A tuple containing the IResult response and the count of matching accounts.</returns>
     public static async Task<(IResult result, int counter)> SearchByEmail
         (string email, AccountDb db)
     {
@@ -32,6 +44,10 @@ public class AccountEndpoints
     }
 
 
+    /// <summary>Deletes an account by its ID.</summary>
+    /// <param name="id">The account ID to delete.</param>
+    /// <param name="db">The database context for account operations.</param>
+    /// <returns>An IResult containing the deletion response.</returns>
     public static async Task<IResult> DeleteById
         (string id, AccountDb db)
     {
@@ -53,6 +69,10 @@ public class AccountEndpoints
     }
 
 
+    /// <summary>Adds a new account to the database.</summary>
+    /// <param name="context">The HTTP context containing the request data.</param>
+    /// <param name="db">The database context for account operations.</param>
+    /// <returns>An IResult containing the account creation response.</returns>
     public static async Task<IResult> AddAccount(HttpContext context, AccountDb db)
     {
         (InputDataConverter? dataConverter, IResult? error) =
@@ -98,6 +118,11 @@ public class AccountEndpoints
     }
 
 
+    /// <summary>Updates an existing account with new data.</summary>
+    /// <param name="context">The HTTP context containing the request data.</param>
+    /// <param name="db">The database context for account operations.</param>
+    /// <param name="id">The account ID to update.</param>
+    /// <returns>An IResult containing the update response.</returns>
     public static async Task<IResult> UpdateAccount(HttpContext context, AccountDb db, string id)
     {
         (InputDataConverter? dataConverter, IResult? error) =

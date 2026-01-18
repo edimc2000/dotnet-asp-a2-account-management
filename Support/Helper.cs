@@ -9,7 +9,7 @@ namespace AccountManagement.Support;
 internal partial class Helper
 {
     /// <summary>Array of restricted account IDs that cannot be modified or deleted.</summary>
-    internal static int[] restrictedIds = { 200, 201, 202, 203 };
+    internal static readonly int[] restrictedIds = { 200, 201, 202, 203 };
 
     /// <summary>Converts JSON elements to account input data properties.</summary>
     internal class InputDataConverter
