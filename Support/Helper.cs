@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-
+using AccountManagement.EntityModels;
 namespace AccountManagement.Support;
 
 /// <summary>Helper methods for product API operations.</summary>

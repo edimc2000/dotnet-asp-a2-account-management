@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-namespace AccountManagement;
 
+namespace AccountManagement.EntityModels;
 
-
-// this is an auto generated data model using ef tool 
+// This is an auto generated data model using ef tool 
 
 
 [Table("account")]

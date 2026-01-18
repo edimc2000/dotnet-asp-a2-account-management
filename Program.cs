@@ -5,6 +5,7 @@ using Serilog;
 using Serilog.Context;
 using System.Diagnostics;
 using System.Reflection;
+using AccountManagement.EntityModels;
 using static AccountManagement.AccountEndpoints;
 using static AccountManagement.Support.ApiDocsResponseFormat;
 

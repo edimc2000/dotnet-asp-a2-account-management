@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace AccountManagement;
+namespace AccountManagement.EntityModels;
+
+// This is an auto generated file for the database context using ef tool 
 
 public partial class AccountDb : DbContext
 {

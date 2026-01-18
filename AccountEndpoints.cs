@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using AccountManagement.EntityModels;
 using static AccountManagement.Support.DbOperation;
-using static AccountManagement.Helper;
+using static AccountManagement.Support.Helper;
+
 
 namespace AccountManagement;
 
