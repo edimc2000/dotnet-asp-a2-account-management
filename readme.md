@@ -445,7 +445,9 @@ Test framework (Playwright) - https://github.com/edimc2000/dotnet-asp-a2-account
 ![report summary](Screenshots/6_pw_sample_report_detail.png)
 
 
-### Custom Swagger
+## Custom Swagger
+Access upon running the program using '{url}/swagger'
+
 ![report summary](Screenshots/5_custom_swagger_UI.png)
 
 
